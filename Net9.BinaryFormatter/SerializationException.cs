@@ -1,0 +1,44 @@
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+
+using Net9.BinaryFormatter;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+
+namespace Net9.BinaryFormatter
+{
+    [Serializable]
+    [TypeForwardedFrom("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")]
+    public class SerializationException : SystemException
+    {
+        /// <summary>
+        /// Creates a new SerializationException with its message
+        /// string set to a default message.
+        /// </summary>
+        public SerializationException()
+            : base(SR.SerializationException)
+        {
+            HResult = HResults.COR_E_SERIALIZATION;
+        }
+
+        public SerializationException(string? message)
+            : base(message)
+        {
+            HResult = HResults.COR_E_SERIALIZATION;
+        }
+
+        public SerializationException(string? message, Exception? innerException)
+            : base(message, innerException)
+        {
+            HResult = HResults.COR_E_SERIALIZATION;
+        }
+
+//        [Obsolete(Obsoletions.LegacyFormatterImplMessage, DiagnosticId = Obsoletions.LegacyFormatterImplDiagId, UrlFormat = Obsoletions.SharedUrlFormat)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        protected SerializationException(SerializationInfo info, StreamingContext context)
+//            : base(info, context)
+        {
+            throw new Exception("FIXME: does not work right now");
+        }
+    }
+}
