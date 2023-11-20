@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Globalization;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using Net9.BinaryFormatter;
 
 namespace Net9.BinaryFormatter
 {

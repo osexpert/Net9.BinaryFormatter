@@ -7,7 +7,6 @@ using System.Reflection;
 
 namespace Net9.BinaryFormatter
 {
-//    [Obsolete(Obsoletions.LegacyFormatterMessage, DiagnosticId = Obsoletions.LegacyFormatterDiagId, UrlFormat = Obsoletions.SharedUrlFormat)]
     public class ObjectManager
     {
         private const int DefaultInitialSize = 16;

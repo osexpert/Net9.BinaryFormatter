@@ -6,8 +6,7 @@ using System.Diagnostics.Tracing;
 
 namespace Net9.BinaryFormatter
 {
-    [EventSource(
-        Name = "System.Runtime.Serialization.Formatters.Binary.BinaryFormatterEventSource")]
+    [EventSource(Name = "System.Runtime.Serialization.Formatters.Binary.BinaryFormatterEventSource")]
     internal sealed class BinaryFormatterEventSource : EventSource
     {
         private const int EventId_SerializationStart = 10;

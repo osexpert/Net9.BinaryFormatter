@@ -4,7 +4,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.IO;
 using System.Reflection;
 
 namespace Net9.BinaryFormatter
@@ -87,7 +86,8 @@ namespace Net9.BinaryFormatter
 
             _isSimpleAssembly = (_formatterEnums._assemblyFormat == FormatterAssemblyStyle.Simple);
 
-            using (DeserializationToken token = SerializationInfo.StartDeserialization())
+            //using (DeserializationToken token = SerializationInfo.StartDeserialization())
+            //using (DeserializationToken token = new DeserializationToken(null))
             {
                 if (_fullDeserialization)
                 {
