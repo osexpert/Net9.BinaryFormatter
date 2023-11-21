@@ -40,4 +40,9 @@ namespace Net9.BinaryFormatter
             throw new Exception("FIXME: does not work right now");
         }
     }
+
+    internal class HResults
+    {
+        internal const int COR_E_SERIALIZATION = unchecked((int)0x8013150C);
+    }
 }

@@ -3,7 +3,6 @@
 
 namespace Net9.BinaryFormatter
 {
-    //[Obsolete(Obsoletions.LegacyFormatterMessage, DiagnosticId = Obsoletions.LegacyFormatterDiagId, UrlFormat = Obsoletions.SharedUrlFormat)]
     public interface IObjectReference
     {
         object GetRealObject(StreamingContext context);

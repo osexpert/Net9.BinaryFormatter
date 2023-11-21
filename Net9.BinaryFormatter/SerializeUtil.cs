@@ -1,11 +1,40 @@
-﻿using System.Reflection;
+﻿using System.ComponentModel;
+using System.Reflection;
 
 namespace Net9.BinaryFormatter
 {
+    public class Hardening
+    {
+        public static bool DelegateIsSerializable { get; set; } = false;
+        public static bool EnableTypeGoodList { get; set; } = true;
+
+        public static List<Type> TypeGoodList { get; set; } = GetTypeGoodList();
+
+        internal static bool IsTypeInGoodList(Type type)
+        {
+
+
+
+            return TypeGoodList.Contains(type);
+        }
+
+        private static List<Type> GetTypeGoodList()
+        {
+            var res = new List<Type>();
+            res.Add(typeof(System.Version));
+            return res;
+        }
+    }
+
     internal class SerializeUtil
     {
         internal static bool IsSerializable(Type type)
         {
+            if (Hardening.EnableTypeGoodList)
+            {
+                return Hardening.IsTypeInGoodList(type);
+            }
+
             //    [Obsolete(Obsoletions.LegacyFormatterMessage, DiagnosticId = Obsoletions.LegacyFormatterDiagId, UrlFormat = Obsoletions.SharedUrlFormat)]
             //    public virtual bool IsSerializable
             //{
@@ -106,7 +135,56 @@ namespace Net9.BinaryFormatter
         static readonly Type _runtimeType = Type.GetType("System.RuntimeType") ?? throw new Exception("System.RuntimeType not found");
         internal static bool IsRuntimeType(Type type)
         {
-            return type.IsAssignableFrom(_runtimeType);
+            // Example of what would not be a runtime type: new TypeDelegator(typeof(int))
+
+
+            return type.GetType() == typeof(void).GetType();
+            //  return type == _runtimeType || type.GetType() == _runtimeType;
+            //            if (type.IsPointer) return true;
+            //if (IsExtends(type, typeof(object))) return false;
+            //          return false;
+
+
+            //            //https://stackoverflow.com/a/10183678/2671330
+            //          return !typeof(Type).IsAssignableFrom(type);
+
+            // does not work
+            //return type.IsAssignableFrom(_runtimeType);
+        }
+    }
+
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Enum | AttributeTargets.Delegate, Inherited = false)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class SerializableAttribute : Attribute
+    {
+        public SerializableAttribute() { }
+    }
+
+    [AttributeUsage(AttributeTargets.Field, Inherited = false)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class NonSerializedAttribute : Attribute
+    {
+        public NonSerializedAttribute()
+        {
         }
     }
 }
+
+//namespace Net9
+//{
+//    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Enum | AttributeTargets.Delegate, Inherited = false)]
+//    [EditorBrowsable(EditorBrowsableState.Never)]
+//    public sealed class SerializableAttribute : Attribute
+//    {
+//        public SerializableAttribute() { }
+//    }
+
+//    [AttributeUsage(AttributeTargets.Field, Inherited = false)]
+//    [EditorBrowsable(EditorBrowsableState.Never)]
+//    public sealed class NonSerializedAttribute : Attribute
+//    {
+//        public NonSerializedAttribute()
+//        {
+//        }
+//    }
+//}

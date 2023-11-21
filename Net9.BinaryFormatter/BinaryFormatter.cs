@@ -5,7 +5,6 @@ using System.Collections.Concurrent;
 
 namespace Net9.BinaryFormatter
 {
-   // [Obsolete(Obsoletions.BinaryFormatterMessage, DiagnosticId = Obsoletions.BinaryFormatterDiagId, UrlFormat = Obsoletions.SharedUrlFormat)]
     public sealed partial class BinaryFormatter : IFormatter
     {
         private static readonly ConcurrentDictionary<Type, TypeInformation> s_typeNameCache = new ConcurrentDictionary<Type, TypeInformation>();
