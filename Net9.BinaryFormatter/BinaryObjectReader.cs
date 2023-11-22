@@ -1092,6 +1092,7 @@ namespace Net9.BinaryFormatter
             else
             {
                 // Bind(er) = custom type resolver?
+                // problem: null can not block? But it can throw so...
                 objectType = Bind(assemblyInfo._assemblyString, name);
                 if (objectType == null)
                 {

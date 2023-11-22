@@ -18,7 +18,7 @@ namespace Net9.BinaryFormatter
         private int _currentId;
 
         private readonly ISurrogateSelector? _surrogates;
-        internal readonly StreamingContext _context;
+        private readonly StreamingContext _context;
         private BinaryFormatterWriter? _serWriter;
         private readonly SerializationObjectManager _objectManager;
 
@@ -975,7 +975,7 @@ namespace Net9.BinaryFormatter
             {
                 assemId = 0;
             }
-            else if (_context.Net9Config.IsAnyUrtAssembly(assemblyString))
+            else if (assemblyString.Equals(Converter.s_urtAssemblyString))// || assemblyString.Equals(Converter.s_urtAlternativeAssemblyString);
             {
                 // Urt type is an assemId of 0. No assemblyString needs to be sent
                 // FIXME: this seems wrong....does not work with TimeOnly...OR maybe we are using the wrong Urt-assembly in the destination...

@@ -31,15 +31,19 @@ namespace Net9.BinaryFormatter
         internal static readonly Type s_typeofObject = typeof(object);
         internal static readonly Type s_typeofSystemVoid = typeof(void);
 
-//        // In .NET Framework the default assembly is mscorlib.dll --> typeof(string).Assembly.
-//        // In Core type string lives in System.Private.Corelib.dll which doesn't
-//        // contain all the types which are living in mscorlib in .NET Framework. Therefore we
-//        // use our mscorlib facade which also contains manual type forwards for deserialization.
-//        internal static readonly Assembly s_urtAssembly = Assembly.Load("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
-//        internal static readonly string s_urtAssemblyString = s_urtAssembly.FullName!;
+        //        // In .NET Framework the default assembly is mscorlib.dll --> typeof(string).Assembly.
+        //        // In Core type string lives in System.Private.Corelib.dll which doesn't
+        //        // contain all the types which are living in mscorlib in .NET Framework. Therefore we
+        //        // use our mscorlib facade which also contains manual type forwards for deserialization.
+        //internal static readonly Assembly s_urtAssembly = Assembly.Load("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
+        //internal static readonly string s_urtAssemblyString = s_urtAssembly.FullName!;
 
-//        internal static readonly Assembly s_urtAlternativeAssembly = s_typeofString.Assembly;
-//        internal static readonly string s_urtAlternativeAssemblyString = s_urtAlternativeAssembly.FullName!;
+        //internal static readonly Assembly s_urtAlternativeAssembly = s_typeofString.Assembly;
+        //internal static readonly string s_urtAlternativeAssemblyString = s_urtAlternativeAssembly.FullName!;
+
+        // I don't care about .NET Framework ....
+        internal static readonly Assembly s_urtAssembly = s_typeofString.Assembly;
+        internal static readonly string s_urtAssemblyString = s_urtAssembly.FullName!;
 
         // Arrays
         internal static readonly Type s_typeofTypeArray = typeof(Type[]);

@@ -1,40 +1,37 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-
-using System.Globalization;
-
 namespace Net9.BinaryFormatter
 {
     internal class SR
     {
-        internal const string Argument_DataLengthDifferent = nameof(Argument_DataLengthDifferent);
-        internal const string Serialization_NotISer = nameof(Serialization_NotISer);
-        internal const string Serialization_ConstructorNotFound = nameof(Serialization_ConstructorNotFound);
-        internal const string Serialization_SameNameTwice = nameof(Serialization_SameNameTwice);
-        internal const string Argument_MustSupplyContainer = nameof(Argument_MustSupplyContainer);
-        internal const string Argument_MemberAndArray = nameof(Argument_MemberAndArray);
-        internal const string Argument_MustSupplyParent = nameof(Argument_MustSupplyParent);
-        internal const string Serialization_NotCyclicallyReferenceableSurrogate = nameof(Serialization_NotCyclicallyReferenceableSurrogate);
-        internal const string Serialization_ObjectNotSupplied = nameof(Serialization_ObjectNotSupplied);
-        internal const string Serialization_ParentChildIdentical = nameof(Serialization_ParentChildIdentical);
-        internal const string Serialization_IncorrectNumberOfFixups = nameof(Serialization_IncorrectNumberOfFixups);
-        internal const string Serialization_InvalidType = nameof(Serialization_InvalidType);
-        internal const string Serialization_InvalidFixupType = nameof(Serialization_InvalidFixupType);
-        internal const string Serialization_IdTooSmall = nameof(Serialization_IdTooSmall);
-        internal const string Serialization_TooManyReferences = nameof(Serialization_TooManyReferences);
-        internal const string Serialization_ObjectTypeEnum = nameof(Serialization_ObjectTypeEnum);
-        internal const string Serialization_Assembly = nameof(Serialization_Assembly);
-        internal const string Serialization_OptionalFieldVersionValue = nameof(Serialization_OptionalFieldVersionValue);
-        internal const string Serialization_MissingMember = nameof(Serialization_MissingMember);
-        internal const string Serialization_SerMemberInfo = nameof(Serialization_SerMemberInfo);
-        internal const string Serialization_ArrayType = nameof(Serialization_ArrayType);
-        internal const string Serialization_ArrayTypeObject = nameof(Serialization_ArrayTypeObject);
-        internal const string Serialization_Map = nameof(Serialization_Map);
-        internal const string Serialization_CrossAppDomainError = nameof(Serialization_CrossAppDomainError);
-        internal const string Serialization_TypeMissing = nameof(Serialization_TypeMissing);
-        internal const string Serialization_StreamEnd = nameof(Serialization_StreamEnd);
-        internal const string Serialization_BinaryHeader = nameof(Serialization_BinaryHeader);
+        internal const string Argument_DataLengthDifferent = "Parameters 'members' and 'data' must have the same length.";
+        internal const string Serialization_NotISer = "The given object does not implement the ISerializable interface.";
+        internal const string Serialization_ConstructorNotFound = "The constructor to deserialize an object of type '{0}' was not found.";
+        internal const string Serialization_SameNameTwice = "Cannot add the same member twice to a SerializationInfo object.";
+        internal const string Argument_MustSupplyContainer = "When supplying a FieldInfo for fixing up a nested type, a valid ID for that containing object must also be supplied.";
+        internal const string Argument_MemberAndArray = "Cannot supply both a MemberInfo and an Array to indicate the parent of a value type.";
+        internal const string Argument_MustSupplyParent = "When supplying the ID of a containing object, the FieldInfo that identifies the current field within that object must also be supplied.";
+        internal const string Serialization_NotCyclicallyReferenceableSurrogate = "{0}.SetObjectData returns a value that is neither null nor equal to the first parameter. Such Surrogates cannot be part of cyclical reference.";
+        internal const string Serialization_ObjectNotSupplied = "The object with ID {0} was referenced in a fixup but does not exist.";
+        internal const string Serialization_ParentChildIdentical = "The ID of the containing object cannot be the same as the object ID.";
+        internal const string Serialization_IncorrectNumberOfFixups = "The ObjectManager found an invalid number of fixups. This usually indicates a problem in the Formatter.";
+        internal const string Serialization_InvalidType = "Only system-provided types can be passed to the GetUninitializedObject method. '{0}' is not a valid instance of a type.";
+        internal const string Serialization_InvalidFixupType = "A member fixup was registered for an object which implements ISerializable or has a surrogate. In this situation, a delayed fixup must be used.";
+        internal const string Serialization_IdTooSmall = "Object IDs must be greater than zero.";
+        internal const string Serialization_TooManyReferences = "The implementation of the IObjectReference interface returns too many nested references to other objects that implement IObjectReference.";
+        internal const string Serialization_ObjectTypeEnum = "Invalid ObjectTypeEnum {0}.";
+        internal const string Serialization_Assembly = "No assembly information is available for object on the wire, '{0}'.";
+        internal const string Serialization_OptionalFieldVersionValue = "Version value must be positive.";
+        internal const string Serialization_MissingMember = "Member '{0}' in class '{1}' is not present in the serialized stream and is not marked with {2}.";
+        internal const string Serialization_SerMemberInfo = "MemberInfo type {0} cannot be serialized.";
+        internal const string Serialization_ArrayType = "Invalid array type '{0}'.";
+        internal const string Serialization_ArrayTypeObject = "Array element type is Object, 'dt' attribute is null.";
+        internal const string Serialization_Map = "No map for object '{0}'.";
+        internal const string Serialization_CrossAppDomainError = "Cross-AppDomain BinaryFormatter error; expected '{0}' but received '{1}'.";
+        internal const string Serialization_TypeMissing = "Type is missing for member of type Object '{0}'.";
+        internal const string Serialization_StreamEnd = "End of Stream encountered before parsing was completed.";
+        internal const string Serialization_BinaryHeader = "Binary stream '{0}' does not contain a valid BinaryHeader. Possible causes are invalid stream or object version change between serialization and deserialization.";
         internal const string Serialization_TypeExpected = nameof(Serialization_TypeExpected);
         internal const string Serialization_MissingObject = nameof(Serialization_MissingObject);
         internal const string Serialization_InvalidFixupDiscovered = nameof(Serialization_InvalidFixupDiscovered);
@@ -74,19 +71,19 @@ namespace Net9.BinaryFormatter
         internal const string Serialization_Stream = nameof(Serialization_Stream);
         internal const string Serialization_NeverSeen = nameof(Serialization_NeverSeen);
         internal const string Serialization_IORIncomplete = nameof(Serialization_IORIncomplete);
-        internal const string Serialization_NonSerType = nameof(Serialization_NonSerType);
-        internal const string Serialization_UnknownMemberInfo = nameof(Serialization_UnknownMemberInfo);
+        internal const string Serialization_NonSerType = "Type '{0}' in Assembly '{1}' is not marked as serializable.";
+        internal const string Serialization_UnknownMemberInfo = "Only FieldInfo, PropertyInfo, and SerializationMemberInfo are recognized.";
 
         internal static string Format(string str, params object?[]  args)
         {
-            //return string.Format(str, args);
-            return str + string.Join(", ", new object[] { str }.Concat(args));
+            return string.Format(str, args);
+            //return str + string.Join(", ", new object[] { str }.Concat(args));
         }
 
         internal static string Format(IFormatProvider fp, string str, params object?[] args)
         {
-            //return string.Format(fp, str, args);
-            return str + string.Join(", ", new object[] { str }.Concat(args));
+            return string.Format(fp, str, args);
+            //return str + string.Join(", ", new object[] { str }.Concat(args));
         }
     }
 }

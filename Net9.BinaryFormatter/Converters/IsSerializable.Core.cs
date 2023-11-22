@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
+﻿using System.ComponentModel;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Net9.BinaryFormatter
 {
@@ -137,60 +132,60 @@ namespace Net9.BinaryFormatter
         }
     }
 
-    public class Net9Configuration
+    public static class Net9Settings
     {
-        public static readonly Net9Configuration Default = new Net9Configuration();
+        //public static readonly Net9Settings Default = new Net9Settings();
 
-        public Net9Configuration()
-        {
-            SetUrtAssemblies();
-        }
+        //public Net9Settings()
+        //{
+        //   // SetUrtAssemblies();
+        //}
 
-        private void SetUrtAssemblies()
-        {
-            s_urtAssembly = Assembly.Load("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
-            s_urtAssemblyString = s_urtAssembly.FullName!;
+        //private void SetUrtAssemblies()
+        //{
+        //    s_urtAssembly = Assembly.Load("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
+        //    s_urtAssemblyString = s_urtAssembly.FullName!;
 
-            s_urtAlternativeAssembly = typeof(string).Assembly;
-            s_urtAlternativeAssemblyString = s_urtAlternativeAssembly.FullName!;
-        }
+        //    s_urtAlternativeAssembly = typeof(string).Assembly;
+        //    s_urtAlternativeAssemblyString = s_urtAlternativeAssembly.FullName!;
+        //}
 
         public static bool DelegateIsSerializable { get; set; } = false;
 
-        internal bool IsAnyUrtAssembly(string assemblyString)
-        {
-            return assemblyString.Equals(s_urtAssemblyString) || assemblyString.Equals(s_urtAlternativeAssemblyString);
-        }
+        //internal bool IsAnyUrtAssembly(string assemblyString)
+        //{
+        //    return assemblyString.Equals(s_urtAssemblyString) || assemblyString.Equals(s_urtAlternativeAssemblyString);
+        //}
 
-        internal bool IsMainUrtAssembly(string assemblyString)
-        {
-            return assemblyString.Equals(s_urtAssemblyString);
-        }
+        //internal bool IsMainUrtAssembly(string assemblyString)
+        //{
+        //    return assemblyString.Equals(s_urtAssemblyString);
+        //}
 
-        internal bool IsMainUrtAssembly(Assembly assembly)
-        {
-            return assembly == s_urtAssembly;
-        }
+        //internal bool IsMainUrtAssembly(Assembly assembly)
+        //{
+        //    return assembly == s_urtAssembly;
+        //}
 
-        internal BinaryAssemblyInfo GetMainUrtBinaryAssemblyInfo()
-        {
-            return new BinaryAssemblyInfo(s_urtAssemblyString, s_urtAssembly);
-        }
-
-
-        //        public static bool EnableTypeGoodList { get; set; } = true;
+        //internal BinaryAssemblyInfo GetMainUrtBinaryAssemblyInfo()
+        //{
+        //    return new BinaryAssemblyInfo(s_urtAssemblyString, s_urtAssembly);
+        //}
 
 
-        // In .NET Framework the default assembly is mscorlib.dll --> typeof(string).Assembly.
-        // In Core type string lives in System.Private.Corelib.dll which doesn't
-        // contain all the types which are living in mscorlib in .NET Framework. Therefore we
-        // use our mscorlib facade which also contains manual type forwards for deserialization.
-        internal Assembly s_urtAssembly;// = Assembly.Load("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
-        ////        internal static readonly Assembly s_urtAssembly = typeof(string).Assembly;// Assembly.Load("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
-        internal string s_urtAssemblyString;// = s_urtAssembly.FullName!;
+        ////        public static bool EnableTypeGoodList { get; set; } = true;
 
-        internal Assembly s_urtAlternativeAssembly;// = s_typeofString.Assembly;
-        internal string s_urtAlternativeAssemblyString;// = s_urtAlternativeAssembly.FullName!;
+
+        //// In .NET Framework the default assembly is mscorlib.dll --> typeof(string).Assembly.
+        //// In Core type string lives in System.Private.Corelib.dll which doesn't
+        //// contain all the types which are living in mscorlib in .NET Framework. Therefore we
+        //// use our mscorlib facade which also contains manual type forwards for deserialization.
+        //internal Assembly s_urtAssembly;// = Assembly.Load("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
+        //////        internal static readonly Assembly s_urtAssembly = typeof(string).Assembly;// Assembly.Load("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
+        //internal string s_urtAssemblyString;// = s_urtAssembly.FullName!;
+
+        //internal Assembly s_urtAlternativeAssembly;// = s_typeofString.Assembly;
+        //internal string s_urtAlternativeAssemblyString;// = s_urtAlternativeAssembly.FullName!;
 
     }
 

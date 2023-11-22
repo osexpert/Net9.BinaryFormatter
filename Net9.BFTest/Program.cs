@@ -49,7 +49,7 @@ public class Program
         sta.Push(145);
 
 
-        bf.Serialize(ms, list);
+        bf.Serialize(ms, to);
 
 
         // hvorfor funker det med keyvalue pair??

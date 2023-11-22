@@ -156,7 +156,7 @@ namespace Net9.BinaryFormatter
                 {
                     object? typeInformation;
                     binaryTypeEnumA[i] = BinaryTypeConverter.GetBinaryTypeInfo(memberTypes[i], memberObjectInfos[i], null, _objectWriter,
-                        out typeInformation, out assemId, _objectWriter._context);
+                        out typeInformation, out assemId);
                     typeInformationA[i] = typeInformation;
                     assemIdA[i] = assemId;
                 }
@@ -207,7 +207,7 @@ namespace Net9.BinaryFormatter
             int assemId;
             BinaryTypeEnum binaryTypeEnum = BinaryTypeConverter.GetBinaryTypeInfo(
                 arrayElemTypeNameInfo._type!, objectInfo, arrayElemTypeNameInfo.NIname, _objectWriter,
-                out typeInformation, out assemId, _objectWriter._context);
+                out typeInformation, out assemId);
 
             _binaryArray ??= new BinaryArray();
             _binaryArray.Set((int)arrayNameInfo._objectId, 1, lengthA, lowerBoundA, binaryTypeEnum, typeInformation, binaryArrayTypeEnum, assemId);
@@ -283,7 +283,7 @@ namespace Net9.BinaryFormatter
             }
 
             BinaryTypeEnum binaryTypeEnum = BinaryTypeConverter.GetBinaryTypeInfo(arrayElemTypeNameInfo._type!, objectInfo, arrayElemTypeNameInfo.NIname, 
-                _objectWriter, out typeInformation, out assemId, _objectWriter._context);
+                _objectWriter, out typeInformation, out assemId);
 
             _binaryArray ??= new BinaryArray();
             _binaryArray.Set((int)arrayNameInfo._objectId, 1, lengthA, lowerBoundA, binaryTypeEnum, typeInformation, binaryArrayTypeEnum, assemId);
@@ -299,7 +299,7 @@ namespace Net9.BinaryFormatter
             object? typeInformation;
             int assemId;
             BinaryTypeEnum binaryTypeEnum = BinaryTypeConverter.GetBinaryTypeInfo(arrayElemTypeNameInfo._type!, objectInfo, arrayElemTypeNameInfo.NIname,
-                _objectWriter, out typeInformation, out assemId, _objectWriter._context);
+                _objectWriter, out typeInformation, out assemId);
 
             _binaryArray ??= new BinaryArray();
 

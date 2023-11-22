@@ -37,6 +37,10 @@ namespace Net9.BinaryFormatter
         Primitive = 0,
         String = 1,
         Object = 2,
+        /// <summary>
+        /// Urt: Uses runtime type?
+        /// Urt type is an assemId of 0. No assemblyString needs to be sent
+        /// </summary>
         ObjectUrt = 3,
         ObjectUser = 4,
         ObjectArray = 5,

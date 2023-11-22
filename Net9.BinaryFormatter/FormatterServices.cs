@@ -185,11 +185,6 @@ namespace Net9.BinaryFormatter
                 mh => InternalGetSerializableMembers(mh._memberType));
         }
 
-        public static void CheckTypeSecurity(Type t, TypeFilterLevel securityLevel)
-        {
-            // nop
-        }
-
         public static object GetUninitializedObject(
             // This API doesn't call any constructors, but the type needs to be seen as constructed.
             // A type is seen as constructed if a constructor is kept.

@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 
 namespace Net9.BinaryFormatter
 {
 
-    public static class IsSerializableHandlers
+    public class IsSerializableHandlers
     {
-        public static List<IsSerializableHandler> Handlers { get; set; } = GetDefaultHandlers();
+        public static List<IIsSerializable> Handlers { get; set; } = GetDefaultHandlers();
 
-        internal static bool IsSerializable(Type type)
+        public static bool IsSerializable(Type type)
         {
             foreach (var h in Handlers)
                 if (h.IsSerializable(type))
@@ -22,9 +17,9 @@ namespace Net9.BinaryFormatter
         }
 
 
-        private static List<IsSerializableHandler> GetDefaultHandlers()
+        private static List<IIsSerializable> GetDefaultHandlers()
         {
-            var res = new List<IsSerializableHandler>();
+            var res = new List<IIsSerializable>();
             res.Add(new CommonSerializableTypes());
             res.Add(new SerializableAttributeTypes());
             return res;
@@ -32,20 +27,20 @@ namespace Net9.BinaryFormatter
     }
 
 
-    public abstract class IsSerializableHandler
+    public interface IIsSerializable
     {
-        public abstract bool IsSerializable(Type type);
+        bool IsSerializable(Type type);
     }
 
-    public class SerializableAttributeTypes : IsSerializableHandler
+    public class SerializableAttributeTypes : IIsSerializable
     {
-        public override bool IsSerializable(Type type)
+        public bool IsSerializable(Type type)
         {
             return type.GetCustomAttribute<SerializableAttribute>() != null;
         }
     }
 
-    public class CommonSerializableTypes : IsSerializableHandler
+    public class CommonSerializableTypes : IIsSerializable
     {
         HashSet<Type> _genTypes = new();
         HashSet<Type> _types = new();
@@ -63,7 +58,7 @@ namespace Net9.BinaryFormatter
             _genTypes.Add(typeof(KeyValuePair<,>));
         }
 
-        public override bool IsSerializable(Type type)
+        public bool IsSerializable(Type type)
         {
             if (type.IsGenericType)
             {
@@ -87,7 +82,7 @@ namespace Net9.BinaryFormatter
                     // System.Enum and System.MulticastDelegate. However, a generic parameter can
                     // have a base type constraint that is Delegate or even a real delegate type.
                     // Let's maintain compatibility and return true for them.
-                    if ((underlyingType == typeof(Delegate) && Net9Configuration.DelegateIsSerializable) || underlyingType == typeof(Enum))
+                    if ((underlyingType == typeof(Delegate) && Net9Settings.DelegateIsSerializable) || underlyingType == typeof(Enum))
                         return true;
 
 

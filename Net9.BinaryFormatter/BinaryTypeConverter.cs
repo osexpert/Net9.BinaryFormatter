@@ -11,7 +11,7 @@ namespace Net9.BinaryFormatter
     {
         // From the type create the BinaryTypeEnum and typeInformation which describes the type on the wire
         internal static BinaryTypeEnum GetBinaryTypeInfo(Type type, WriteObjectInfo? objectInfo, string? typeName, 
-            ObjectWriter objectWriter, out object? typeInformation, out int assemId, StreamingContext context)
+            ObjectWriter objectWriter, out object? typeInformation, out int assemId)
         {
             BinaryTypeEnum binaryTypeEnum;
 
@@ -58,7 +58,7 @@ namespace Net9.BinaryFormatter
                         }
 
                         Debug.Assert(assembly != null);
-                        if (context.Net9Config.IsAnyUrtAssembly(assembly)) // assembly.Equals(Converter.s_urtAssemblyString) || assembly.Equals(Converter.s_urtAlternativeAssemblyString))
+                        if (assembly.Equals(Converter.s_urtAssemblyString))// || assembly.Equals(Converter.s_urtAlternativeAssemblyString))
                         {
                             binaryTypeEnum = BinaryTypeEnum.ObjectUrt;
                             assemId = 0;
@@ -116,7 +116,7 @@ namespace Net9.BinaryFormatter
                 switch (primitiveTypeEnum)
                 {
                     case InternalPrimitiveTypeE.Invalid:
-                        binaryTypeEnum = context.Net9Config.IsMainUrtAssembly(type.Assembly) ? // type.Assembly == Converter.s_urtAssembly ?
+                        binaryTypeEnum = type.Assembly == Converter.s_urtAssembly ?
                             BinaryTypeEnum.ObjectUrt :
                             BinaryTypeEnum.ObjectUser;
                         typeInformation = type.FullName;
