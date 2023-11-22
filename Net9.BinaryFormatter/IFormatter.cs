@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Net9.BinaryFormatter
 {
-    //[Obsolete(Obsoletions.BinaryFormatterMessage, DiagnosticId = Obsoletions.BinaryFormatterDiagId, UrlFormat = Obsoletions.SharedUrlFormat)]
     public interface IFormatter
     {
         internal const string RequiresDynamicCodeMessage = "BinaryFormatter serialization uses dynamic code generation, the type of objects being processed cannot be statically discovered.";

@@ -170,15 +170,13 @@ namespace Net9.BinaryFormatter
         [RequiresUnreferencedCode(ObjectManagerUnreferencedCodeMessage)]
         private void FixupSpecialObject(ObjectHolder holder)
         {
-            ISurrogateSelector? uselessSelector = null;
-
             Debug.Assert(holder.RequiresSerInfoFixup, "[ObjectManager.FixupSpecialObject]holder.HasSurrogate||holder.HasISerializable");
             if (holder.HasSurrogate)
             {
                 ISerializationSurrogate? surrogate = holder.Surrogate;
                 Debug.Assert(surrogate != null, "surrogate!=null");
                 Debug.Assert(holder.SerializationInfo != null);
-                object? returnValue = surrogate.SetObjectData(holder.ObjectValue!, holder.SerializationInfo, _context, uselessSelector);
+                object? returnValue = surrogate.SetObjectData(holder.ObjectValue!, holder.SerializationInfo, _context);
                 if (returnValue != null)
                 {
                     if (!holder.CanSurrogatedObjectValueChange && returnValue != holder.ObjectValue)
@@ -673,7 +671,6 @@ namespace Net9.BinaryFormatter
 
             ObjectHolder? temp;
             ISerializationSurrogate? surrogate = null;
-            ISurrogateSelector useless;
 
             if (_selector != null)
             {
@@ -682,7 +679,7 @@ namespace Net9.BinaryFormatter
                     typeof(MarshalByRefObject);
 
                 //If we need a surrogate for this object, lets find it now.
-                surrogate = _selector.GetSurrogate(selectorType, _context, out useless);
+                surrogate = _selector.GetSurrogate(selectorType, _context);
             }
 
             //The object is interested in DeserializationEvents so lets register it.

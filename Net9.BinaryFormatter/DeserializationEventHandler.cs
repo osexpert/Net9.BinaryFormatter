@@ -6,4 +6,9 @@ namespace Net9.BinaryFormatter
     internal delegate void DeserializationEventHandler(object? sender);
 
     public delegate void SerializationEventHandler(StreamingContext context);
+
+    public interface IDeserializationCallback
+    {
+        void OnDeserialization(object? sender);
+    }
 }

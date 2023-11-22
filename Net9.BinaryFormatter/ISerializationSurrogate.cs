@@ -6,6 +6,6 @@ namespace Net9.BinaryFormatter
     public interface ISerializationSurrogate
     {
         void GetObjectData(object obj, SerializationInfo info, StreamingContext context);
-        object SetObjectData(object obj, SerializationInfo info, StreamingContext context, ISurrogateSelector? selector);
+        object SetObjectData(object obj, SerializationInfo info, StreamingContext context);
     }
 }

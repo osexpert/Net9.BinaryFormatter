@@ -333,7 +333,7 @@ namespace Net9.BinaryFormatter
 
             //if (type is not RuntimeType)
             //if (!type.IsAssignableFrom(_runtimeType))
-            if (!SerializeUtil.IsRuntimeType(type))
+            if (!TypeHelper.IsRuntimeType(type))
                 throw new ArgumentException(SR.Argument_MustBeRuntimeType);
 
             object? value = GetElement(name, out Type foundType);
@@ -351,7 +351,7 @@ namespace Net9.BinaryFormatter
         {
             Debug.Assert(type is not null, "[SerializationInfo.GetValue]type ==null");
             //Debug.Assert(type is RuntimeType, "[SerializationInfo.GetValue]type is not a runtime type");
-            Debug.Assert(SerializeUtil.IsRuntimeType(type), "[SerializationInfo.GetValue]type is not a runtime type");
+            Debug.Assert(TypeHelper.IsRuntimeType(type), "[SerializationInfo.GetValue]type is not a runtime type");
 
             object? value = GetElementNoThrow(name, out Type? foundType);
             if (value == null)

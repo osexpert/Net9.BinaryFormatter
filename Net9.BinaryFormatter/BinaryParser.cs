@@ -53,7 +53,7 @@ namespace Net9.BinaryFormatter
         }
 
         internal BinaryAssemblyInfo SystemAssemblyInfo =>
-            _systemAssemblyInfo ??= new BinaryAssemblyInfo(Converter.s_urtAssemblyString, Converter.s_urtAssembly);
+            _systemAssemblyInfo ??= _objectReader._context.Net9Config.GetMainUrtBinaryAssemblyInfo();
 
         internal SizedArray ObjectMapIdTable =>
             _objectMapIdTable ??= new SizedArray();

@@ -10,7 +10,8 @@ namespace Net9.BinaryFormatter
     internal static class BinaryTypeConverter
     {
         // From the type create the BinaryTypeEnum and typeInformation which describes the type on the wire
-        internal static BinaryTypeEnum GetBinaryTypeInfo(Type type, WriteObjectInfo? objectInfo, string? typeName, ObjectWriter objectWriter, out object? typeInformation, out int assemId)
+        internal static BinaryTypeEnum GetBinaryTypeInfo(Type type, WriteObjectInfo? objectInfo, string? typeName, 
+            ObjectWriter objectWriter, out object? typeInformation, out int assemId, StreamingContext context)
         {
             BinaryTypeEnum binaryTypeEnum;
 
@@ -57,7 +58,7 @@ namespace Net9.BinaryFormatter
                         }
 
                         Debug.Assert(assembly != null);
-                        if (assembly.Equals(Converter.s_urtAssemblyString) || assembly.Equals(Converter.s_urtAlternativeAssemblyString))
+                        if (context.Net9Config.IsAnyUrtAssembly(assembly)) // assembly.Equals(Converter.s_urtAssemblyString) || assembly.Equals(Converter.s_urtAlternativeAssemblyString))
                         {
                             binaryTypeEnum = BinaryTypeEnum.ObjectUrt;
                             assemId = 0;
@@ -84,7 +85,7 @@ namespace Net9.BinaryFormatter
         }
 
         // Used for non Si types when Parsing
-        internal static BinaryTypeEnum GetParserBinaryTypeInfo(Type type, out object? typeInformation)
+        internal static BinaryTypeEnum GetParserBinaryTypeInfo(Type type, out object? typeInformation, StreamingContext context)
         {
             BinaryTypeEnum binaryTypeEnum;
             typeInformation = null;
@@ -115,7 +116,7 @@ namespace Net9.BinaryFormatter
                 switch (primitiveTypeEnum)
                 {
                     case InternalPrimitiveTypeE.Invalid:
-                        binaryTypeEnum = type.Assembly == Converter.s_urtAssembly ?
+                        binaryTypeEnum = context.Net9Config.IsMainUrtAssembly(type.Assembly) ? // type.Assembly == Converter.s_urtAssembly ?
                             BinaryTypeEnum.ObjectUrt :
                             BinaryTypeEnum.ObjectUser;
                         typeInformation = type.FullName;

@@ -96,7 +96,7 @@ namespace Net9.BinaryFormatter
             for (int i = 0; i < fields.Length; i++)
             {
                 //if ((fields[i].Attributes & FieldAttributes.NotSerialized) == FieldAttributes.NotSerialized)
-                if (SerializeUtil.IsNotSerialized(fields[i].Attributes))
+                if (SerializeUtil.IsNotSerialized(fields[i]))
                 {
                     continue;
                 }
@@ -111,7 +111,7 @@ namespace Net9.BinaryFormatter
                 for (int i = 0; i < fields.Length; i++)
                 {
                     //if ((fields[i].Attributes & FieldAttributes.NotSerialized) == FieldAttributes.NotSerialized)
-                    if (SerializeUtil.IsNotSerialized(fields[i].Attributes))
+                    if (SerializeUtil.IsNotSerialized(fields[i]))
                     {
                         continue;
                     }
@@ -387,9 +387,9 @@ namespace Net9.BinaryFormatter
             _innerSurrogate.GetObjectData(obj, info, context);
         }
 
-        public object SetObjectData(object obj, SerializationInfo info, StreamingContext context, ISurrogateSelector? selector)
+        public object SetObjectData(object obj, SerializationInfo info, StreamingContext context)
         {
-            return _innerSurrogate.SetObjectData(obj, info, context, selector);
+            return _innerSurrogate.SetObjectData(obj, info, context);
         }
     }
 }

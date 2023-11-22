@@ -46,7 +46,7 @@ namespace Net9.BinaryFormatter
 
             for (int i = 0; i < _memberTypes.Length; i++)
             {
-                BinaryTypeEnum binaryTypeEnum = BinaryTypeConverter.GetParserBinaryTypeInfo(_memberTypes[i]!, out object? typeInformation);
+                BinaryTypeEnum binaryTypeEnum = BinaryTypeConverter.GetParserBinaryTypeInfo(_memberTypes[i]!, out object? typeInformation, objectReader._context);
                 _binaryTypeEnumA[i] = binaryTypeEnum;
                 _typeInformationA[i] = typeInformation;
             }

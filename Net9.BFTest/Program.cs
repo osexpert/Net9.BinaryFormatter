@@ -1,5 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using FromGore;
+//using FromGore;
 using Net9.BinaryFormatter;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -35,9 +35,19 @@ public class Program
 
         var to = TimeOnly.FromDateTime(DateTime.Now); // FIXME
 
-        BinarySerializerOptions opt = new BinarySerializerOptions(true);
-        opt.Surrogates.Add(new GenDictSurrogate());
-        bf.SurrogateSelector = new SafeSurrogateSelector(bf.SurrogateSelector, opt);
+        var cs = new ConverterSelector();
+        cs.Converters.Add(new GenericDictionaryConverterFactory());
+        cs.Converters.Add(new GenericHashSetConverterFactory());
+//        cs.Converters.Add(new GenericStackConverterFactory());
+        //cs.Converters.Add(new Net9.BinaryFormatter.Converters.DateTimeConverter());
+
+        bf.SurrogateSelector = cs;
+
+        var hs= new HashSet<int>() { 5 };
+        var sta = new Stack<int>();
+        sta.Push(45);
+        sta.Push(145);
+
 
         bf.Serialize(ms, list);
 
@@ -49,6 +59,10 @@ public class Program
         ms.Position = 0;
 
         var g = bf.Deserialize(ms);
+
+        var sta2 = (Stack<int>)g;
+        var p1 = sta2.Pop();
+        var p2 = sta2.Pop();
 
         Console.WriteLine("Hello, World!");
     }

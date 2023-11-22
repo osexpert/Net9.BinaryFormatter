@@ -3,7 +3,7 @@
 
 namespace Net9.BinaryFormatter
 {
-    //[Obsolete(Obsoletions.LegacyFormatterMessage, DiagnosticId = Obsoletions.LegacyFormatterDiagId, UrlFormat = Obsoletions.SharedUrlFormat)]
+
     public enum FormatterTypeStyle
     {
         TypesWhenNeeded = 0, // Types are outputted only for Arrays of Objects, Object Members of type Object, and ISerializable non-primitive value types
@@ -11,14 +11,14 @@ namespace Net9.BinaryFormatter
         XsdString = 0x2      // Strings are outputed as xsd rather then SOAP-ENC strings. No string ID's are transmitted
     }
 
-  //  [Obsolete(Obsoletions.LegacyFormatterMessage, DiagnosticId = Obsoletions.LegacyFormatterDiagId, UrlFormat = Obsoletions.SharedUrlFormat)]
+
     public enum FormatterAssemblyStyle
     {
         Simple = 0,
         Full = 1,
     }
 
-//    [Obsolete(Obsoletions.LegacyFormatterMessage, DiagnosticId = Obsoletions.LegacyFormatterDiagId, UrlFormat = Obsoletions.SharedUrlFormat)]
+
     public enum TypeFilterLevel
     {
         Low = 0x2,

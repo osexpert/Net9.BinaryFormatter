@@ -3,25 +3,25 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-#pragma warning disable CA1066 // Implement IEquatable when overriding Object.Equals
-#pragma warning disable SYSLIB0050 // The StreamingContext type is part of the obsolete legacy serialization framework
-
 namespace Net9.BinaryFormatter
 {
     public readonly struct StreamingContext
     {
+        private readonly Net9Configuration _net9config;
+
         private readonly object? _additionalContext;
 
         private readonly StreamingContextStates _state;
 
-        public StreamingContext(StreamingContextStates state) : this(state, null)
+        public StreamingContext(StreamingContextStates state) : this(state, null, Net9Configuration.Default)
         {
         }
 
-        public StreamingContext(StreamingContextStates state, object? additional)
+        public StreamingContext(StreamingContextStates state, object? additional, Net9Configuration net9config)
         {
             _state = state;
             _additionalContext = additional;
+            _net9config = net9config;
         }
 
         public override bool Equals([NotNullWhen(true)] object? obj)
@@ -39,6 +39,8 @@ namespace Net9.BinaryFormatter
         public StreamingContextStates State => _state;
 
         public object? Context => _additionalContext;
+
+        public Net9Configuration Net9Config => _net9config;
     }
 
     [Flags]

@@ -155,7 +155,8 @@ namespace Net9.BinaryFormatter
                 for (int i = 0; i < numMembers; i++)
                 {
                     object? typeInformation;
-                    binaryTypeEnumA[i] = BinaryTypeConverter.GetBinaryTypeInfo(memberTypes[i], memberObjectInfos[i], null, _objectWriter, out typeInformation, out assemId);
+                    binaryTypeEnumA[i] = BinaryTypeConverter.GetBinaryTypeInfo(memberTypes[i], memberObjectInfos[i], null, _objectWriter,
+                        out typeInformation, out assemId, _objectWriter._context);
                     typeInformationA[i] = typeInformation;
                     assemIdA[i] = assemId;
                 }
@@ -205,7 +206,8 @@ namespace Net9.BinaryFormatter
 
             int assemId;
             BinaryTypeEnum binaryTypeEnum = BinaryTypeConverter.GetBinaryTypeInfo(
-                arrayElemTypeNameInfo._type!, objectInfo, arrayElemTypeNameInfo.NIname, _objectWriter, out typeInformation, out assemId);
+                arrayElemTypeNameInfo._type!, objectInfo, arrayElemTypeNameInfo.NIname, _objectWriter,
+                out typeInformation, out assemId, _objectWriter._context);
 
             _binaryArray ??= new BinaryArray();
             _binaryArray.Set((int)arrayNameInfo._objectId, 1, lengthA, lowerBoundA, binaryTypeEnum, typeInformation, binaryArrayTypeEnum, assemId);
@@ -280,7 +282,8 @@ namespace Net9.BinaryFormatter
                 lowerBoundA[0] = lowerBound;
             }
 
-            BinaryTypeEnum binaryTypeEnum = BinaryTypeConverter.GetBinaryTypeInfo(arrayElemTypeNameInfo._type!, objectInfo, arrayElemTypeNameInfo.NIname, _objectWriter, out typeInformation, out assemId);
+            BinaryTypeEnum binaryTypeEnum = BinaryTypeConverter.GetBinaryTypeInfo(arrayElemTypeNameInfo._type!, objectInfo, arrayElemTypeNameInfo.NIname, 
+                _objectWriter, out typeInformation, out assemId, _objectWriter._context);
 
             _binaryArray ??= new BinaryArray();
             _binaryArray.Set((int)arrayNameInfo._objectId, 1, lengthA, lowerBoundA, binaryTypeEnum, typeInformation, binaryArrayTypeEnum, assemId);
@@ -295,7 +298,8 @@ namespace Net9.BinaryFormatter
             BinaryArrayTypeEnum binaryArrayTypeEnum = BinaryArrayTypeEnum.Rectangular;
             object? typeInformation;
             int assemId;
-            BinaryTypeEnum binaryTypeEnum = BinaryTypeConverter.GetBinaryTypeInfo(arrayElemTypeNameInfo._type!, objectInfo, arrayElemTypeNameInfo.NIname, _objectWriter, out typeInformation, out assemId);
+            BinaryTypeEnum binaryTypeEnum = BinaryTypeConverter.GetBinaryTypeInfo(arrayElemTypeNameInfo._type!, objectInfo, arrayElemTypeNameInfo.NIname,
+                _objectWriter, out typeInformation, out assemId, _objectWriter._context);
 
             _binaryArray ??= new BinaryArray();
 

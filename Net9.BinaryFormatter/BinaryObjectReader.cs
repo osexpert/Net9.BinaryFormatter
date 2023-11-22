@@ -132,7 +132,7 @@ namespace Net9.BinaryFormatter
         }
         private bool HasSurrogate(Type t)
         {
-            return _surrogates != null && _surrogates.GetSurrogate(t, _context, out _) != null;
+            return _surrogates != null && _surrogates.GetSurrogate(t, _context) != null;
         }
 
         private void CheckSerializable(Type t)
@@ -1091,6 +1091,7 @@ namespace Net9.BinaryFormatter
             }
             else
             {
+                // Bind(er) = custom type resolver?
                 objectType = Bind(assemblyInfo._assemblyString, name);
                 if (objectType == null)
                 {

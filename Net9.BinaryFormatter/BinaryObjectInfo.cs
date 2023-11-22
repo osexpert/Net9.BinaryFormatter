@@ -92,7 +92,7 @@ namespace Net9.BinaryFormatter
             InvokeSerializationBinder(binder);
             objectWriter.ObjectManager.RegisterObject(obj);
 
-            if (surrogateSelector != null && (_serializationSurrogate = surrogateSelector.GetSurrogate(_objectType, context, out _)) != null)
+            if (surrogateSelector != null && (_serializationSurrogate = surrogateSelector.GetSurrogate(_objectType, context)) != null)
             {
                 _si = new SerializationInfo(_objectType, converter);
                 if (!_objectType.IsPrimitive)
@@ -158,7 +158,7 @@ namespace Net9.BinaryFormatter
 
             if (surrogateSelector != null)
             {
-                _serializationSurrogate = surrogateSelector.GetSurrogate(objectType, context, out _);
+                _serializationSurrogate = surrogateSelector.GetSurrogate(objectType, context);
             }
 
             if (_serializationSurrogate != null)
@@ -450,7 +450,7 @@ namespace Net9.BinaryFormatter
 
             if (surrogateSelector != null)
             {
-                _serializationSurrogate = surrogateSelector.GetSurrogate(objectType, context, out _);
+                _serializationSurrogate = surrogateSelector.GetSurrogate(objectType, context);
             }
 
             if (_serializationSurrogate != null)

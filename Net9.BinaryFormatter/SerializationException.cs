@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 namespace Net9.BinaryFormatter
 {
     [Serializable]
-    [TypeForwardedFrom("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")] // HMMM??
+//    [TypeForwardedFrom("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")] // HMMM??
     public class SerializationException : SystemException
     {
         /// <summary>
@@ -32,13 +32,13 @@ namespace Net9.BinaryFormatter
             HResult = HResults.COR_E_SERIALIZATION;
         }
 
-//        [Obsolete(Obsoletions.LegacyFormatterImplMessage, DiagnosticId = Obsoletions.LegacyFormatterImplDiagId, UrlFormat = Obsoletions.SharedUrlFormat)]
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        protected SerializationException(SerializationInfo info, StreamingContext context)
-//            : base(info, context)
-        {
-            throw new Exception("FIXME: does not work right now");
-        }
+//        [EditorBrowsable(EditorBrowsableState.Never)]
+//        protected SerializationException(SerializationInfo info, StreamingContext context)
+//#pragma warning disable SYSLIB0051 // Type or member is obsolete
+//            : base(GetBaseInfo(info), GetBaseContext(context))
+//#pragma warning restore SYSLIB0051 // Type or member is obsolete
+//        {
+//        }
     }
 
     internal class HResults
