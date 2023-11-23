@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Reflection;
 
 namespace Net9.BinaryFormatter
@@ -128,48 +129,50 @@ namespace Net9.BinaryFormatter
 
     public class SerializableGoodTypes : IIsSerializable
     {
-        HashSet<Type> _genericTypes = new();
-        HashSet<Type> _types = new();
+        public HashSet<Type> Types { get; }
 
         //public bool DelegateIsSerializable { get; set; } = false;
-        public void AddGoodType(Type type)
-        {
-            if (type.IsGenericType)
-            {
-                _genericTypes.Add(type);
-            }
-            else
-            {
-                _types.Add(type);
-            }
-        }
+        //public void AddGoodType(Type type)
+        //{
+        //    Types.Add(type);
+        //}
 
         public SerializableGoodTypes(bool addDefaultTypes = true)
         {
             if (addDefaultTypes)
             {
-                _types.Add(typeof(Version));
-                _types.Add(typeof(ValueType));
-                _types.Add(typeof(DateTime));
-                _types.Add(typeof(TimeOnly));
-                _types.Add(typeof(DateOnly));
-
-                _genericTypes.Add(typeof(List<>));
-                _genericTypes.Add(typeof(Stack<>));
-                _genericTypes.Add(typeof(KeyValuePair<,>));
+                Types = GetDefaultTypes();
             }
+            else
+            {
+                Types = new();
+            }
+        }
+
+        private HashSet<Type> GetDefaultTypes()
+        {
+            HashSet<Type> res = new();
+            res.Add(typeof(Version));
+            res.Add(typeof(ValueType));
+            res.Add(typeof(DateTime));
+            res.Add(typeof(TimeOnly));
+            res.Add(typeof(DateOnly));
+
+            res.Add(typeof(List<>));
+            res.Add(typeof(Stack<>));
+            res.Add(typeof(KeyValuePair<,>));
+
+            return res;
         }
 
         public bool IsSerializable(Type type)
         {
-            if (type.IsGenericType)
+            if (Types.Contains(type))
+                return true;
+
+            if (type.IsGenericType && !type.IsGenericTypeDefinition)
             {
-                if (_genericTypes.Contains(type) || _genericTypes.Contains(type.GetGenericTypeDefinition()))
-                    return true;
-            }
-            else
-            {
-                if (_types.Contains(type))
+                if (Types.Contains(type.GetGenericTypeDefinition()))
                     return true;
             }
 

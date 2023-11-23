@@ -36,8 +36,7 @@ public class Program
         var to = TimeOnly.FromDateTime(DateTime.Now); // FIXME
 
         var cs = new ConverterSelector();
-        cs.Converters.Add(new GenericDictionaryConverterFactory());
-        cs.Converters.Add(new GenericHashSetConverterFactory());
+
 //        cs.Converters.Add(new GenericStackConverterFactory());
         //cs.Converters.Add(new Net9.BinaryFormatter.Converters.DateTimeConverter());
 
