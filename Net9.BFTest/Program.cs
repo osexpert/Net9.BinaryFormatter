@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 
 public class Program
 {
+    //[Net9.BinaryFormatter.Serializable]
     public enum Lol42
     {
         Test = 5
@@ -55,7 +56,7 @@ public class Program
 
        
 
-        bf.Serialize(ms, list);
+        bf.Serialize(ms, Lol42.Test);
 
 
 

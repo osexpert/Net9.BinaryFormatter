@@ -52,7 +52,16 @@ namespace Net9.BinaryFormatter
 
     public class SerializableByAttribute : IIsSerializable
     {
-        public bool DelegateIsSerializable { get; set; } = false;
+        /*
+         * No point:
+         * Delegates are unsupported anyways
+         *    public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            throw new PlatformNotSupportedException(SR.Serialization_DelegatesNotSupported);
+        }
+         * 
+         */
+        //        public bool DelegateIsSerializable { get; set; } = false;
 
         /// <summary>
         /// Orginal implementation in net8
@@ -60,8 +69,8 @@ namespace Net9.BinaryFormatter
         /// <param name="type"></param>
         /// <returns></returns>
         public bool IsSerializable(Type type)
-        { 
-            return IsSerializableStatic(type, DelegateIsSerializable);
+        {
+            return IsSerializableStatic(type);//, DelegateIsSerializable);
         }
 
         /// <summary>
@@ -70,7 +79,7 @@ namespace Net9.BinaryFormatter
         /// <param name="type"></param>
         /// <param name="delegateIsSerializable"></param>
         /// <returns></returns>
-        internal static bool IsSerializableStatic(Type type, bool delegateIsSerializable)
+        internal static bool IsSerializableStatic(Type type)//, bool delegateIsSerializable)
         {
             // Original code used TypeAttributes.Serializable
             if (type.GetCustomAttribute<SerializableAttribute>() != null)
@@ -87,7 +96,8 @@ namespace Net9.BinaryFormatter
                     // have a base type constraint that is Delegate or even a real delegate type.
                     // Let's maintain compatibility and return true for them.
                     // SECURITY: made the delegate logic OPTIN
-                    if ((delegateIsSerializable && underlyingType == typeof(Delegate)) || underlyingType == typeof(Enum))
+                    //if ((delegateIsSerializable && underlyingType == typeof(Delegate)) || underlyingType == typeof(Enum))
+                    if (underlyingType == typeof(Enum))
                         return true;
 
                     underlyingType = underlyingType.BaseType;
@@ -96,33 +106,6 @@ namespace Net9.BinaryFormatter
             }
 
             return false;
-
-
-            //    get
-            //    {
-            //        if ((GetAttributeFlagsImpl() & TypeAttributes.Serializable) != 0)
-            //            return true;
-
-            //        Type? underlyingType = UnderlyingSystemType;
-            //        if (underlyingType is RuntimeType)
-            //        {
-            //            do
-            //            {
-            //                // In all sane cases we only need to compare the direct level base type with
-            //                // System.Enum and System.MulticastDelegate. However, a generic parameter can
-            //                // have a base type constraint that is Delegate or even a real delegate type.
-            //                // Let's maintain compatibility and return true for them.
-            //                if (underlyingType == typeof(Delegate) || underlyingType == typeof(Enum))
-            //                    return true;
-
-            //                underlyingType = underlyingType.BaseType;
-            //            }
-            //            while (underlyingType != null);
-            //        }
-
-            //        return false;
-            //    }
-            //}
         }
     }
 
@@ -134,7 +117,7 @@ namespace Net9.BinaryFormatter
 
         public bool IsSerializable(Type type)
         {
-            return SerializableByAttribute.IsSerializableStatic(type, delegateIsSerializable: false);
+            return SerializableByAttribute.IsSerializableStatic(type);//, delegateIsSerializable: false);
         }
     }
 
