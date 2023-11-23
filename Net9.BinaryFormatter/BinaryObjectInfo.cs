@@ -133,10 +133,11 @@ namespace Net9.BinaryFormatter
             StreamingContext context,
             SerObjectInfoInit serObjectInfoInit,
             IFormatterConverter converter,
-            SerializationBinder? binder)
+            SerializationBinder? binder,
+            IIsSerializable? isser)
         {
             WriteObjectInfo woi = GetObjectInfo(serObjectInfoInit);
-            woi.InitSerialize(objectType, surrogateSelector, context, serObjectInfoInit, converter, binder);
+            woi.InitSerialize(objectType, surrogateSelector, context, serObjectInfoInit, converter, binder, isser);
             return woi;
         }
 
@@ -147,8 +148,10 @@ namespace Net9.BinaryFormatter
             StreamingContext context,
             SerObjectInfoInit serObjectInfoInit,
             IFormatterConverter converter,
-            SerializationBinder? binder)
+            SerializationBinder? binder,
+            IIsSerializable? isser)
         {
+            _isser = isser;
             _objectType = objectType;
             _context = context;
             _serObjectInfoInit = serObjectInfoInit;

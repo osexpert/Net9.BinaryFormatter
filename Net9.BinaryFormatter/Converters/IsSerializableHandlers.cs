@@ -30,11 +30,16 @@ namespace Net9.BinaryFormatter
             }
         }
 
-        private static List<IIsSerializable> GetDefaultHandlers()
+        /// <summary>
+        /// Return a list of new default instances of the the default handlers (new instances made every time GetDefaultHandlers is called)
+        /// </summary>
+        /// <returns></returns>
+        public static List<IIsSerializable> GetDefaultHandlers()
         {
             var res = new List<IIsSerializable>();
-            res.Add(new SerializableByAttribute());
+            res.Add(new SerializablePrimitiveTypes());
             res.Add(new SerializableGoodTypes());
+            res.Add(new SerializableByAttribute());
             return res;
         }
     }
@@ -59,8 +64,15 @@ namespace Net9.BinaryFormatter
             return IsSerializableStatic(type, DelegateIsSerializable);
         }
 
+        /// <summary>
+        /// Based on Type.IsSerializable()
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="delegateIsSerializable"></param>
+        /// <returns></returns>
         internal static bool IsSerializableStatic(Type type, bool delegateIsSerializable)
-        { 
+        {
+            // Original code used TypeAttributes.Serializable
             if (type.GetCustomAttribute<SerializableAttribute>() != null)
                 return true;
 
@@ -127,15 +139,14 @@ namespace Net9.BinaryFormatter
     }
 
 
+    public class SerializablePrimitiveTypes : IIsSerializable
+    {
+        public bool IsSerializable(Type type) => type.IsPrimitive;
+    }
+
     public class SerializableGoodTypes : IIsSerializable
     {
         public HashSet<Type> Types { get; }
-
-        //public bool DelegateIsSerializable { get; set; } = false;
-        //public void AddGoodType(Type type)
-        //{
-        //    Types.Add(type);
-        //}
 
         public SerializableGoodTypes(bool addDefaultTypes = true)
         {
@@ -149,24 +160,49 @@ namespace Net9.BinaryFormatter
             }
         }
 
-        private HashSet<Type> GetDefaultTypes()
+        public static HashSet<Type> GetDefaultTypes()
         {
             HashSet<Type> res = new();
             res.Add(typeof(Version));
             res.Add(typeof(ValueType));
             res.Add(typeof(DateTime));
+            res.Add(typeof(DateTimeOffset));
+            res.Add(typeof(TimeSpan));
             res.Add(typeof(TimeOnly));
             res.Add(typeof(DateOnly));
+            res.Add(typeof(string));
 
             res.Add(typeof(List<>));
             res.Add(typeof(Stack<>));
             res.Add(typeof(KeyValuePair<,>));
+            res.Add(typeof(Nullable<>));
+
+            res.Add(typeof(ValueTuple<>));
+            res.Add(typeof(ValueTuple<,>));
+            res.Add(typeof(ValueTuple<,,>));
+            res.Add(typeof(ValueTuple<,,,>));
+            res.Add(typeof(ValueTuple<,,,,>));
+            res.Add(typeof(ValueTuple<,,,,,>));
+            res.Add(typeof(ValueTuple<,,,,,,>));
+            res.Add(typeof(ValueTuple<,,,,,,,>));
+
+            res.Add(typeof(Tuple<>));
+            res.Add(typeof(Tuple<,>));
+            res.Add(typeof(Tuple<,,>));
+            res.Add(typeof(Tuple<,,,>));
+            res.Add(typeof(Tuple<,,,,>));
+            res.Add(typeof(Tuple<,,,,,>));
+            res.Add(typeof(Tuple<,,,,,,>));
+            res.Add(typeof(Tuple<,,,,,,,>));
 
             return res;
         }
 
         public bool IsSerializable(Type type)
         {
+            if (type.IsPrimitive)
+                return true;
+
             if (Types.Contains(type))
                 return true;
 

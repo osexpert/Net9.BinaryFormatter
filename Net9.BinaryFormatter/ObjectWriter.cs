@@ -189,7 +189,8 @@ namespace Net9.BinaryFormatter
                                     _context,
                                     _serObjectInfoInit,
                                     _formatterConverter,
-                                    _binder);
+                                    _binder,
+                                    _isser);
                                 memberObjectInfos[i]._assemId = GetAssemblyId(memberObjectInfos[i]);
                             }
                         }
@@ -428,7 +429,7 @@ namespace Net9.BinaryFormatter
             if (!arrayElemType.IsPrimitive)
             {
                 Debug.Assert(_serObjectInfoInit != null && _formatterConverter != null);
-                arrayElemObjectInfo = WriteObjectInfo.Serialize(arrayElemType, _surrogates, _context, _serObjectInfoInit, _formatterConverter, _binder);
+                arrayElemObjectInfo = WriteObjectInfo.Serialize(arrayElemType, _surrogates, _context, _serObjectInfoInit, _formatterConverter, _binder, _isser);
                 arrayElemObjectInfo._assemId = GetAssemblyId(arrayElemObjectInfo);
             }
 

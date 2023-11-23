@@ -24,7 +24,7 @@ namespace Net9.BinaryFormatter
         public ISurrogateSelector? SurrogateSelector { get { return _surrogates; } set { _surrogates = value; } }
         public SerializationBinder? Binder { get { return _binder; } set { _binder = value; } }
         public StreamingContext Context { get { return _context; } set { _context = value; } }
-        public IIsSerializable? Isser { get { return _isser; } set { _isser = value; } }
+        public IIsSerializable? IsSerializable { get { return _isser; } set { _isser = value; } }
 
         public BinaryFormatter() : this(null, new StreamingContext(StreamingContextStates.All))
         {

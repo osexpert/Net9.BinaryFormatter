@@ -7,6 +7,11 @@ using System.Runtime.CompilerServices;
 
 public class Program
 {
+    public enum Lol42
+    {
+        Test = 5
+    }
+
     public static void Main()
     {
 
@@ -40,18 +45,17 @@ public class Program
 //        cs.Converters.Add(new GenericStackConverterFactory());
         //cs.Converters.Add(new Net9.BinaryFormatter.Converters.DateTimeConverter());
 
-        bf.SurrogateSelector = cs;
-
-        var issers = new IsSerializableHandlers();
-        bf.Isser = issers;
+        bf.SurrogateSelector = new ConverterSelector();
+        bf.IsSerializable = new IsSerializableHandlers();
 
         var hs= new HashSet<int>() { 5 };
         var sta = new Stack<int>();
         sta.Push(45);
         sta.Push(145);
 
+       
 
-        bf.Serialize(ms, to);
+        bf.Serialize(ms, new DateTimeOffset(DateTime.Now));
 
 
         // hvorfor funker det med keyvalue pair??
@@ -71,8 +75,16 @@ public class Program
 }
 
 [Net9.BinaryFormatter.Serializable]
+public class Test
+{
+    public int? nullable = null;
+    public int? nullable2 = null;
+}
+
+[Net9.BinaryFormatter.Serializable]
 public readonly struct KeyValuePair2<TKey, TValue>
 {
+
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private readonly TKey key; // Do not rename (binary serialization)
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
