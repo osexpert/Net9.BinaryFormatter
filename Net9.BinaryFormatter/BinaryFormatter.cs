@@ -1,7 +1,9 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using System;
 using System.Collections.Concurrent;
+using System.Reflection;
 
 namespace Net9.BinaryFormatter
 {
@@ -12,7 +14,8 @@ namespace Net9.BinaryFormatter
         internal ISurrogateSelector? _surrogates;
         internal StreamingContext _context;
         internal SerializationBinder? _binder;
-        internal IIsSerializable? _isser;
+        internal Func<Type, bool> _isSerializable = DefaultIsSerializable.Instance.IsSerializable;
+        internal Func<FieldInfo, bool> _isNotSerialized = (field) => field.GetCustomAttribute<NonSerializedAttribute>() != null;
         internal FormatterTypeStyle _typeFormat = FormatterTypeStyle.TypesAlways; // For version resiliency, always put out types
         internal FormatterAssemblyStyle _assemblyFormat = FormatterAssemblyStyle.Simple;
         internal TypeFilterLevel _securityLevel = TypeFilterLevel.Full;
@@ -24,7 +27,8 @@ namespace Net9.BinaryFormatter
         public ISurrogateSelector? SurrogateSelector { get { return _surrogates; } set { _surrogates = value; } }
         public SerializationBinder? Binder { get { return _binder; } set { _binder = value; } }
         public StreamingContext Context { get { return _context; } set { _context = value; } }
-        public IIsSerializable? IsSerializable { get { return _isser; } set { _isser = value; } }
+        public Func<Type, bool> IsSerializable { get { return _isSerializable; } set { _isSerializable = value; } }
+        public Func<FieldInfo, bool> IsNotSerialized { get { return _isNotSerialized; } set { _isNotSerialized = value; } }
 
         public BinaryFormatter() : this(null, new StreamingContext(StreamingContextStates.All))
         {

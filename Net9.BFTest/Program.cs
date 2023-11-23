@@ -1,5 +1,4 @@
 ﻿// See https://aka.ms/new-console-template for more information
-//using FromGore;
 using Net9.BinaryFormatter;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -38,7 +37,7 @@ public class Program
         
         var kv = new KeyValuePair2<int, int>(1, 2);
 
-        var to = TimeOnly.FromDateTime(DateTime.Now); // FIXME
+        var to = TimeOnly.FromDateTime(DateTime.Now);
 
         var cs = new ConverterSelector();
 
@@ -46,7 +45,7 @@ public class Program
         //cs.Converters.Add(new Net9.BinaryFormatter.Converters.DateTimeConverter());
 
         bf.SurrogateSelector = new ConverterSelector();
-        bf.IsSerializable = new IsSerializableHandlers();
+        bf.IsSerializable = new IsSerializableHandlers().IsSerializable;
 
         var hs= new HashSet<int>() { 5 };
         var sta = new Stack<int>();
@@ -58,9 +57,6 @@ public class Program
         bf.Serialize(ms, new DateTimeOffset(DateTime.Now));
 
 
-        // hvorfor funker det med keyvalue pair??
-        //hva med andre structs?
-        //KeyValuePair<
 
         ms.Position = 0;
 

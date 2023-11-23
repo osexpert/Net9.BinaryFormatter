@@ -28,7 +28,8 @@ namespace Net9.BinaryFormatter
         internal ISerializationSurrogate? _serializationSurrogate;
         internal StreamingContext _context;
         internal SerObjectInfoInit? _serObjectInfoInit;
-        internal IIsSerializable? _isser;
+        internal Func<Type, bool> _isSerializable = null!; // Initiated before use
+        internal Func<FieldInfo, bool> _isNotSerialized = null!; // Inited before use
 
         // Writing and Parsing information
         internal long _objectId;
@@ -68,23 +69,24 @@ namespace Net9.BinaryFormatter
 
         [RequiresUnreferencedCode("It isn't possible to statically get the Type of object")]
         internal static WriteObjectInfo Serialize(object obj, ISurrogateSelector? surrogateSelector, StreamingContext context, SerObjectInfoInit serObjectInfoInit, IFormatterConverter converter, ObjectWriter objectWriter,
-            SerializationBinder? binder, IIsSerializable? isser)
+            SerializationBinder? binder, Func<Type, bool> isSerializable, Func<FieldInfo, bool> isNotSerialized)
         {
             WriteObjectInfo woi = GetObjectInfo(serObjectInfoInit);
-            woi.InitSerialize(obj, surrogateSelector, context, serObjectInfoInit, converter, objectWriter, binder, isser);
+            woi.InitSerialize(obj, surrogateSelector, context, serObjectInfoInit, converter, objectWriter, binder, isSerializable, isNotSerialized);
             return woi;
         }
 
         // Write constructor
         [RequiresUnreferencedCode("It isn't possible to statically get the Type of object")]
         internal void InitSerialize(object obj, ISurrogateSelector? surrogateSelector, StreamingContext context, SerObjectInfoInit serObjectInfoInit, IFormatterConverter converter, ObjectWriter objectWriter, 
-            SerializationBinder? binder, IIsSerializable? isser)
+            SerializationBinder? binder, Func<Type, bool> isSerializable, Func<FieldInfo, bool> isNotSerialized)
         {
             _context = context;
             _obj = obj;
             _serObjectInfoInit = serObjectInfoInit;
             _objectType = obj.GetType();
-            _isser = isser;
+            _isSerializable = isSerializable;
+            _isNotSerialized = isNotSerialized;
 
             if (_objectType.IsArray)
             {
@@ -105,18 +107,14 @@ namespace Net9.BinaryFormatter
                 }
                 InitSiWrite();
             }
-            //else if (obj is ISerializable)
-            else if (SerializeHelper.IsISerializable(obj))
+            else if (obj is ISerializable) // PS: remeber this is the Net9 ISerializable
             {
-                //if (!_objectType.IsSerializable)
-                //if (!SerializeUtil.IsSerializable(_objectType))
-                if (!(_isser ?? DefaultIsSerializable.Instance).IsSerializable(_objectType))
+                if (!_isSerializable(_objectType))
                 {
                     throw new SerializationException(SR.Format(SR.Serialization_NonSerType, _objectType.FullName, _objectType.Assembly.FullName));
                 }
                 _si = new SerializationInfo(_objectType, converter);
-                //((ISerializable)obj).GetObjectData(_si, context);
-                SerializeHelper.GetObjectData(obj, _si, context);
+                ((ISerializable)obj).GetObjectData(_si, context);
                 InitSiWrite();
                 CheckTypeForwardedFrom(_cache, _objectType, _binderAssemblyString);
             }
@@ -134,10 +132,11 @@ namespace Net9.BinaryFormatter
             SerObjectInfoInit serObjectInfoInit,
             IFormatterConverter converter,
             SerializationBinder? binder,
-            IIsSerializable? isser)
+            Func<Type, bool> isSerializable,
+            Func<FieldInfo, bool> isNotSerialized)
         {
             WriteObjectInfo woi = GetObjectInfo(serObjectInfoInit);
-            woi.InitSerialize(objectType, surrogateSelector, context, serObjectInfoInit, converter, binder, isser);
+            woi.InitSerialize(objectType, surrogateSelector, context, serObjectInfoInit, converter, binder, isSerializable, isNotSerialized);
             return woi;
         }
 
@@ -149,9 +148,11 @@ namespace Net9.BinaryFormatter
             SerObjectInfoInit serObjectInfoInit,
             IFormatterConverter converter,
             SerializationBinder? binder,
-            IIsSerializable? isser)
+            Func<Type, bool> isSerializable,
+            Func<FieldInfo, bool> isNotSerialized)
         {
-            _isser = isser;
+            _isSerializable = isSerializable;
+            _isNotSerialized = isNotSerialized;
             _objectType = objectType;
             _context = context;
             _serObjectInfoInit = serObjectInfoInit;
@@ -262,7 +263,7 @@ namespace Net9.BinaryFormatter
             {
                 _cache = new SerObjectInfoCache(_objectType);
 
-                _cache._memberInfos = FormatterServices.GetSerializableMembers(_objectType, _context, _isser);
+                _cache._memberInfos = FormatterServices.GetSerializableMembers(_objectType, _context, _isSerializable, _isNotSerialized);
                 int count = _cache._memberInfos.Length;
                 _cache._memberNames = new string[count];
                 _cache._memberTypes = new Type[count];
@@ -353,7 +354,8 @@ namespace Net9.BinaryFormatter
 
         internal ISerializationSurrogate? _serializationSurrogate;
         internal StreamingContext _context;
-        internal IIsSerializable? _isser;
+        internal Func<Type, bool> _isSerializable = null!; // Initiated before use
+        internal Func<FieldInfo, bool> _isNotSerialized = null!; // Initd before use
 
         // Si Read
         internal List<Type>? _memberTypesList;
@@ -376,11 +378,11 @@ namespace Net9.BinaryFormatter
             ObjectManager? objectManager,
             SerObjectInfoInit? serObjectInfoInit,
             IFormatterConverter? converter,
-            IIsSerializable? isser,
+            Func<Type, bool> isSerializable,
             bool bSimpleAssembly)
         {
             ReadObjectInfo roi = GetObjectInfo(serObjectInfoInit);
-            roi.Init(objectType, surrogateSelector, context, objectManager, serObjectInfoInit, converter, isser, bSimpleAssembly);
+            roi.Init(objectType, surrogateSelector, context, objectManager, serObjectInfoInit, converter, isSerializable, bSimpleAssembly);
             return roi;
         }
 
@@ -391,7 +393,7 @@ namespace Net9.BinaryFormatter
             ObjectManager? objectManager,
             SerObjectInfoInit? serObjectInfoInit,
             IFormatterConverter? converter,
-            IIsSerializable? isser,
+            Func<Type, bool> isSerializable,
             bool bSimpleAssembly)
         {
             _objectType = objectType;
@@ -399,7 +401,7 @@ namespace Net9.BinaryFormatter
             _context = context;
             _serObjectInfoInit = serObjectInfoInit;
             _formatterConverter = converter;
-            _isser = isser;
+            _isSerializable = isSerializable;
             _isSimpleAssembly = bSimpleAssembly;
 
             InitReadConstructor(objectType, surrogateSelector, context);
@@ -414,11 +416,11 @@ namespace Net9.BinaryFormatter
             ObjectManager? objectManager,
             SerObjectInfoInit? serObjectInfoInit,
             IFormatterConverter? converter,
-            IIsSerializable? isser,
+            Func<Type, bool> isSerializable,
             bool bSimpleAssembly)
         {
             ReadObjectInfo roi = GetObjectInfo(serObjectInfoInit);
-            roi.Init(objectType, memberNames, memberTypes, surrogateSelector, context, objectManager, serObjectInfoInit, converter, isser, bSimpleAssembly);
+            roi.Init(objectType, memberNames, memberTypes, surrogateSelector, context, objectManager, serObjectInfoInit, converter, isSerializable, bSimpleAssembly);
             return roi;
         }
 
@@ -431,7 +433,7 @@ namespace Net9.BinaryFormatter
             ObjectManager? objectManager,
             SerObjectInfoInit? serObjectInfoInit,
             IFormatterConverter? converter,
-            IIsSerializable? isser,
+            Func<Type, bool> isSerializable,
             bool bSimpleAssembly)
         {
             _objectType = objectType;
@@ -441,7 +443,7 @@ namespace Net9.BinaryFormatter
             _context = context;
             _serObjectInfoInit = serObjectInfoInit;
             _formatterConverter = converter;
-            _isser = isser;
+            _isSerializable = isSerializable;
             _isSimpleAssembly = bSimpleAssembly;
             if (memberTypes != null)
             {
@@ -503,7 +505,7 @@ namespace Net9.BinaryFormatter
         private void InitMemberInfo()
         {
             _cache = new SerObjectInfoCache(_objectType!);
-            _cache._memberInfos = FormatterServices.GetSerializableMembers(_objectType!, _context, _isser);
+            _cache._memberInfos = FormatterServices.GetSerializableMembers(_objectType!, _context, _isSerializable, _isNotSerialized);
             _count = _cache._memberInfos.Length;
             _cache._memberNames = new string[_count];
             _cache._memberTypes = new Type[_count];

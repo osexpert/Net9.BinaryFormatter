@@ -5,6 +5,7 @@ using Net9.BinaryFormatter;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 
 
 namespace Net9.BinaryFormatter
@@ -26,7 +27,8 @@ namespace Net9.BinaryFormatter
 
         private readonly InternalFE _formatterEnums;
         private readonly SerializationBinder? _binder;
-        private readonly IIsSerializable? _isser;
+        private readonly Func<Type, bool> _isSerializable;
+        private readonly Func<FieldInfo, bool> _isNotSerialized;
 
         private SerObjectInfoInit? _serObjectInfoInit;
 
@@ -43,7 +45,7 @@ namespace Net9.BinaryFormatter
         private InternalPrimitiveTypeE _previousCode = InternalPrimitiveTypeE.Invalid;
 
         internal ObjectWriter(ISurrogateSelector? selector, StreamingContext context, InternalFE formatterEnums, 
-            SerializationBinder? binder, IIsSerializable? isser)
+            SerializationBinder? binder, Func<Type, bool> isSerializable, Func<FieldInfo, bool> isNotSerialized)
         {
             _currentId = 1;
             _surrogates = selector;
@@ -51,7 +53,8 @@ namespace Net9.BinaryFormatter
             _binder = binder;
             _formatterEnums = formatterEnums;
             _objectManager = new SerializationObjectManager(context);
-            _isser = isser;
+            _isSerializable = isSerializable;
+            _isNotSerialized = isNotSerialized;
         }
 
         [RequiresUnreferencedCode(ObjectWriterUnreferencedCodeMessage)]
@@ -89,7 +92,7 @@ namespace Net9.BinaryFormatter
                 }
                 else
                 {
-                    objectInfo = WriteObjectInfo.Serialize(obj, _surrogates, _context, _serObjectInfoInit, _formatterConverter, this, _binder, _isser);
+                    objectInfo = WriteObjectInfo.Serialize(obj, _surrogates, _context, _serObjectInfoInit, _formatterConverter, this, _binder, _isSerializable, _isNotSerialized);
                     objectInfo._assemId = GetAssemblyId(objectInfo);
                 }
 
@@ -178,7 +181,8 @@ namespace Net9.BinaryFormatter
                                     _formatterConverter,
                                     this,
                                     _binder,
-                                    _isser);
+                                    _isSerializable,
+                                    _isNotSerialized);
                                 memberObjectInfos[i]._assemId = GetAssemblyId(memberObjectInfos[i]);
                             }
                             else
@@ -190,7 +194,8 @@ namespace Net9.BinaryFormatter
                                     _serObjectInfoInit,
                                     _formatterConverter,
                                     _binder,
-                                    _isser);
+                                    _isSerializable,
+                                    _isNotSerialized);
                                 memberObjectInfos[i]._assemId = GetAssemblyId(memberObjectInfos[i]);
                             }
                         }
@@ -429,7 +434,7 @@ namespace Net9.BinaryFormatter
             if (!arrayElemType.IsPrimitive)
             {
                 Debug.Assert(_serObjectInfoInit != null && _formatterConverter != null);
-                arrayElemObjectInfo = WriteObjectInfo.Serialize(arrayElemType, _surrogates, _context, _serObjectInfoInit, _formatterConverter, _binder, _isser);
+                arrayElemObjectInfo = WriteObjectInfo.Serialize(arrayElemType, _surrogates, _context, _serObjectInfoInit, _formatterConverter, _binder, _isSerializable, _isNotSerialized);
                 arrayElemObjectInfo._assemId = GetAssemblyId(arrayElemObjectInfo);
             }
 
@@ -638,7 +643,7 @@ namespace Net9.BinaryFormatter
                 if (arrayId < 1)
                 {
                     Debug.Assert(_serObjectInfoInit != null && _formatterConverter != null);
-                    WriteObjectInfo newObjectInfo = WriteObjectInfo.Serialize(obj, _surrogates, _context, _serObjectInfoInit, _formatterConverter, this, _binder, _isser);
+                    WriteObjectInfo newObjectInfo = WriteObjectInfo.Serialize(obj, _surrogates, _context, _serObjectInfoInit, _formatterConverter, this, _binder, _isSerializable, _isNotSerialized);
                     newObjectInfo._objectId = arrayId;
                     newObjectInfo._assemId = !ReferenceEquals(arrayElemTypeNameInfo._type, Converter.s_typeofObject) && Nullable.GetUnderlyingType(arrayElemTypeNameInfo._type!) == null ?
                         actualTypeInfo._assemId :
