@@ -6,30 +6,11 @@ namespace Net9.BinaryFormatter
     public abstract class SerializationBinder
     {
         /*
-         * 
-
 When overridden in a derived class, controls the binding of a serialized object to a type.
-C#
-
-public virtual void BindToName (Type serializedType, out string? assemblyName, out string? typeName);
-
 Parameters
-
-serializedType
-    Type 
-
-The type of the object the formatter creates a new instance of.
-
-assemblyName
-    String 
-
-Specifies the Assembly name of the serialized object.
-
-typeName
-    String 
-
-Specifies the Type name of the serialized object.
-
+serializedType    Type The type of the object the formatter creates a new instance of.
+assemblyName    String Specifies the Assembly name of the serialized object.
+typeName    String Specifies the Type name of the serialized object.
         */
         public virtual void BindToName(Type serializedType, out string? assemblyName, out string? typeName)
         {

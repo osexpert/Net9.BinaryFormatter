@@ -3,9 +3,6 @@ namespace Net9.BinaryFormatter
 {
     public class GenericHashSetConverterFactory : BinaryConverter
     {
-        // needed?
-        //        Dictionary<Type, BaseSerializer> _cache = new();
-
         public override bool CanConvert(Type type)
         {
             var canHandle = type.IsGenericType && type.GetGenericTypeDefinition() == typeof(HashSet<>);
@@ -27,13 +24,9 @@ namespace Net9.BinaryFormatter
 
         private BinaryConverter GetHandler(Type type)
         {
-            //          if (!_cache.TryGetValue(type, out var handler))
-            //          {
             var gt = type.GetGenericArguments();
             var gser = typeof(GenericHashSetConverter<>).MakeGenericType(gt);
             var handler = (BinaryConverter)Activator.CreateInstance(gser)!;
-            //                _cache.TryAdd(type, handler); // worst case we waiste some mem?
-            //            }
 
             return handler;
         }
@@ -44,17 +37,14 @@ namespace Net9.BinaryFormatter
     {
         public override void Serialize(object obj, SerializationInfo info)
         {
-            var dict = (HashSet<K>)obj;
-            var arr = dict.ToArray();
+            var hs = (HashSet<K>)obj;
+            var arr = hs.ToArray();
             info.AddValue("Keys", arr);
         }
 
         public override object Deserialize(object obj, SerializationInfo info)
         {
-    //        var dict = (HashSet<K>)obj;
             var keys = (K[])info.GetValue("Keys", typeof(K[]))!;
-            //          foreach (var k in keys)
-            //                dict.Add(k);
             var dict = new HashSet<K>(keys);
             return dict;
         }

@@ -5,8 +5,6 @@ namespace Net9.BinaryFormatter
 {
     public interface ISurrogateSelector
     {
-  //      void ChainSelector(ISurrogateSelector selector);
         ISerializationSurrogate? GetSurrogate(Type type, StreamingContext context);
-//        ISurrogateSelector? GetNextSelector();
     }
 }

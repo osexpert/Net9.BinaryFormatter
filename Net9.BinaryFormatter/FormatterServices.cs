@@ -65,7 +65,7 @@ namespace Net9.BinaryFormatter
                         {
                             // Family and Assembly fields will be gathered by the type itself.
                             //if (!field.IsNotSerialized)
-                            if (!SerializeUtil.IsNotSerialized(field))
+                            if (!SerializeHelper.IsNotSerialized(field))
                             {
                                 allMembers.Add(new SerializationFieldInfo(field, typeName));
                             }
@@ -97,7 +97,7 @@ namespace Net9.BinaryFormatter
             for (int i = 0; i < fields.Length; i++)
             {
                 //if ((fields[i].Attributes & FieldAttributes.NotSerialized) == FieldAttributes.NotSerialized)
-                if (SerializeUtil.IsNotSerialized(fields[i]))
+                if (SerializeHelper.IsNotSerialized(fields[i]))
                 {
                     continue;
                 }
@@ -112,7 +112,7 @@ namespace Net9.BinaryFormatter
                 for (int i = 0; i < fields.Length; i++)
                 {
                     //if ((fields[i].Attributes & FieldAttributes.NotSerialized) == FieldAttributes.NotSerialized)
-                    if (SerializeUtil.IsNotSerialized(fields[i]))
+                    if (SerializeHelper.IsNotSerialized(fields[i]))
                     {
                         continue;
                     }

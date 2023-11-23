@@ -71,15 +71,9 @@ namespace Net9.BinaryFormatter
 
         public override object Deserialize(object obj, SerializationInfo info)
         {
-            //var dict = (Dictionary<K, V>)obj;
             var keyValues = (KeyValuePair<K, V>[]?)info.GetValue("KeyValues", typeof(KeyValuePair<K, V>[]))!;
-            //            foreach (var kv in keyValues)
-            //              dict.Add(kv.Key, kv.Value);
             var dict = new Dictionary<K, V>(keyValues);
             return dict;
         }
-
-   
-
     }
 }

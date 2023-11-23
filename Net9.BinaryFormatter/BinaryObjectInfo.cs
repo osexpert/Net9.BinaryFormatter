@@ -106,7 +106,7 @@ namespace Net9.BinaryFormatter
                 InitSiWrite();
             }
             //else if (obj is ISerializable)
-            else if (SerializeUtil.IsISerializable(obj))
+            else if (SerializeHelper.IsISerializable(obj))
             {
                 //if (!_objectType.IsSerializable)
                 //if (!SerializeUtil.IsSerializable(_objectType))
@@ -116,7 +116,7 @@ namespace Net9.BinaryFormatter
                 }
                 _si = new SerializationInfo(_objectType, converter);
                 //((ISerializable)obj).GetObjectData(_si, context);
-                SerializeUtil.GetObjectData(obj, _si, context);
+                SerializeHelper.GetObjectData(obj, _si, context);
                 InitSiWrite();
                 CheckTypeForwardedFrom(_cache, _objectType, _binderAssemblyString);
             }

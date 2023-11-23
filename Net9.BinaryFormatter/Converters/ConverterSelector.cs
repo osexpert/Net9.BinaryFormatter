@@ -5,9 +5,9 @@ namespace Net9.BinaryFormatter
 {
     public class ConverterSelector : ISurrogateSelector
     {
-        public List<BinaryConverter> Converters { get; } = new();
+        public List<BinaryConverter> Converters { get; }
 
-        public ConverterSelector(bool addDefaultConverters = true)//ISurrogateSelector? next)
+        public ConverterSelector(bool addDefaultConverters = true)
         {
             if (addDefaultConverters)
             {
@@ -17,28 +17,19 @@ namespace Net9.BinaryFormatter
             {
                 Converters = new();
             }
-
-//            if (next != null)
-  //              throw new NotImplementedException("Next surrogate selector not allowed");
         }
 
-        private List<BinaryConverter> GetDefaultConverters()
+        /// <summary>
+        /// A new instance of converters are made every time
+        /// </summary>
+        /// <returns></returns>
+        public static List<BinaryConverter> GetDefaultConverters()
         {
             var res = new List<BinaryConverter>();
             res.Add(new GenericDictionaryConverterFactory());
             res.Add(new GenericHashSetConverterFactory());
             return res;
         }
-
-        //public void ChainSelector(ISurrogateSelector selector)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public ISurrogateSelector? GetNextSelector()
-        //{
-        //    throw new NotImplementedException();
-        //}
 
         public ISerializationSurrogate? GetSurrogate(Type type, StreamingContext context)
         {
