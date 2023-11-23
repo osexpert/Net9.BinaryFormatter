@@ -31,7 +31,19 @@ namespace Net9.BinaryFormatter
             return res;
         }
 
+        Dictionary<Type, BinaryConverter?> _cache = new();
+
         public ISerializationSurrogate? GetSurrogate(Type type, StreamingContext context)
+        {
+            if (_cache.TryGetValue(type, out var converter))
+                return converter;
+
+            converter = GetConverterUncached(type);
+            _cache.Add(type, converter);
+            return converter;
+        }
+
+        private BinaryConverter? GetConverterUncached(Type type)
         {
             foreach (var converter in Converters)
                 if (converter.CanConvert(type))

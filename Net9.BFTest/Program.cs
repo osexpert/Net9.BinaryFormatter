@@ -46,6 +46,7 @@ public class Program
 
         bf.SurrogateSelector = new ConverterSelector();
         bf.IsSerializable = new IsSerializableHandlers().IsSerializable;
+//        bf.Binder
 
         var hs= new HashSet<int>() { 5 };
         var sta = new Stack<int>();
@@ -54,7 +55,7 @@ public class Program
 
        
 
-        bf.Serialize(ms, new DateTimeOffset(DateTime.Now));
+        bf.Serialize(ms, list);
 
 
 
