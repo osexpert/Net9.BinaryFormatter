@@ -15,8 +15,8 @@ ISerializable
 ```
 It also does not use `FieldAttributes.NotSerialized` or `Type.IsSerializable (TypeAttributes.Serializable)`.
 
-Since it is independent, it also means it can not do anything out of the box, since no types is attributed `[Net9.BinaryFormatter.Serializable]` or implementing `Net9.BinaryFormatter.ISerializable`, not even primitive types like int.
-So you would need to change your code:
+Since it is independent, it also means it can not do anything out of the box, since no types are attributed `[Net9.BinaryFormatter.Serializable]` or implementing `Net9.BinaryFormatter.ISerializable`, not even primitive types like int.
+So first, you would need to change your code like this:
 ````
 from [Serializable] -> [Net9.BinaryFormatter.Serializable]
 from [NonSerialized] -> [Net9.BinaryFormatter.NonSerialized]
@@ -24,7 +24,7 @@ from ISerializable -> Net9.BinaryFormatter.ISerializable
 ````
 etc.
 
-After this you should be able to serialize your own types (not nothing else). But what about types in the runtime? Yes, this is WIP, but some types have been added and you can enable like this:
+Now you should be able to serialize your own types, if they contain nothing at all:-) Because what about types in the runtime? Yes, this is WIP, but some types have been added and you can enable it like this:
 ```
 var bf = new BinaryFormatter();
 bf.SurrogateSelector = new ConverterSelector(); // add default converters, currently Dictionary<,>, HashSet<>.
