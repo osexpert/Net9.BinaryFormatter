@@ -26,6 +26,7 @@ namespace Net9.BinaryFormatter
 
         private readonly InternalFE _formatterEnums;
         private readonly SerializationBinder? _binder;
+        private readonly IIsSerializable? _isser;
 
         private SerObjectInfoInit? _serObjectInfoInit;
 
@@ -41,7 +42,8 @@ namespace Net9.BinaryFormatter
         private Type? _previousType;
         private InternalPrimitiveTypeE _previousCode = InternalPrimitiveTypeE.Invalid;
 
-        internal ObjectWriter(ISurrogateSelector? selector, StreamingContext context, InternalFE formatterEnums, SerializationBinder? binder)
+        internal ObjectWriter(ISurrogateSelector? selector, StreamingContext context, InternalFE formatterEnums, 
+            SerializationBinder? binder, IIsSerializable? isser)
         {
             _currentId = 1;
             _surrogates = selector;
@@ -49,6 +51,7 @@ namespace Net9.BinaryFormatter
             _binder = binder;
             _formatterEnums = formatterEnums;
             _objectManager = new SerializationObjectManager(context);
+            _isser = isser;
         }
 
         [RequiresUnreferencedCode(ObjectWriterUnreferencedCodeMessage)]
@@ -86,7 +89,7 @@ namespace Net9.BinaryFormatter
                 }
                 else
                 {
-                    objectInfo = WriteObjectInfo.Serialize(obj, _surrogates, _context, _serObjectInfoInit, _formatterConverter, this, _binder);
+                    objectInfo = WriteObjectInfo.Serialize(obj, _surrogates, _context, _serObjectInfoInit, _formatterConverter, this, _binder, _isser);
                     objectInfo._assemId = GetAssemblyId(objectInfo);
                 }
 
@@ -174,7 +177,8 @@ namespace Net9.BinaryFormatter
                                     _serObjectInfoInit,
                                     _formatterConverter,
                                     this,
-                                    _binder);
+                                    _binder,
+                                    _isser);
                                 memberObjectInfos[i]._assemId = GetAssemblyId(memberObjectInfos[i]);
                             }
                             else
@@ -633,7 +637,7 @@ namespace Net9.BinaryFormatter
                 if (arrayId < 1)
                 {
                     Debug.Assert(_serObjectInfoInit != null && _formatterConverter != null);
-                    WriteObjectInfo newObjectInfo = WriteObjectInfo.Serialize(obj, _surrogates, _context, _serObjectInfoInit, _formatterConverter, this, _binder);
+                    WriteObjectInfo newObjectInfo = WriteObjectInfo.Serialize(obj, _surrogates, _context, _serObjectInfoInit, _formatterConverter, this, _binder, _isser);
                     newObjectInfo._objectId = arrayId;
                     newObjectInfo._assemId = !ReferenceEquals(arrayElemTypeNameInfo._type, Converter.s_typeofObject) && Nullable.GetUnderlyingType(arrayElemTypeNameInfo._type!) == null ?
                         actualTypeInfo._assemId :

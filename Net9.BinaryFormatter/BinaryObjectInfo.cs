@@ -28,6 +28,7 @@ namespace Net9.BinaryFormatter
         internal ISerializationSurrogate? _serializationSurrogate;
         internal StreamingContext _context;
         internal SerObjectInfoInit? _serObjectInfoInit;
+        internal IIsSerializable? _isser;
 
         // Writing and Parsing information
         internal long _objectId;
@@ -66,21 +67,24 @@ namespace Net9.BinaryFormatter
         }
 
         [RequiresUnreferencedCode("It isn't possible to statically get the Type of object")]
-        internal static WriteObjectInfo Serialize(object obj, ISurrogateSelector? surrogateSelector, StreamingContext context, SerObjectInfoInit serObjectInfoInit, IFormatterConverter converter, ObjectWriter objectWriter, SerializationBinder? binder)
+        internal static WriteObjectInfo Serialize(object obj, ISurrogateSelector? surrogateSelector, StreamingContext context, SerObjectInfoInit serObjectInfoInit, IFormatterConverter converter, ObjectWriter objectWriter,
+            SerializationBinder? binder, IIsSerializable? isser)
         {
             WriteObjectInfo woi = GetObjectInfo(serObjectInfoInit);
-            woi.InitSerialize(obj, surrogateSelector, context, serObjectInfoInit, converter, objectWriter, binder);
+            woi.InitSerialize(obj, surrogateSelector, context, serObjectInfoInit, converter, objectWriter, binder, isser);
             return woi;
         }
 
         // Write constructor
         [RequiresUnreferencedCode("It isn't possible to statically get the Type of object")]
-        internal void InitSerialize(object obj, ISurrogateSelector? surrogateSelector, StreamingContext context, SerObjectInfoInit serObjectInfoInit, IFormatterConverter converter, ObjectWriter objectWriter, SerializationBinder? binder)
+        internal void InitSerialize(object obj, ISurrogateSelector? surrogateSelector, StreamingContext context, SerObjectInfoInit serObjectInfoInit, IFormatterConverter converter, ObjectWriter objectWriter, 
+            SerializationBinder? binder, IIsSerializable? isser)
         {
             _context = context;
             _obj = obj;
             _serObjectInfoInit = serObjectInfoInit;
             _objectType = obj.GetType();
+            _isser = isser;
 
             if (_objectType.IsArray)
             {
@@ -105,7 +109,8 @@ namespace Net9.BinaryFormatter
             else if (SerializeUtil.IsISerializable(obj))
             {
                 //if (!_objectType.IsSerializable)
-                if (!SerializeUtil.IsSerializable(_objectType))
+                //if (!SerializeUtil.IsSerializable(_objectType))
+                if (!(_isser ?? DefaultIsSerializable.Instance).IsSerializable(_objectType))
                 {
                     throw new SerializationException(SR.Format(SR.Serialization_NonSerType, _objectType.FullName, _objectType.Assembly.FullName));
                 }
@@ -254,7 +259,7 @@ namespace Net9.BinaryFormatter
             {
                 _cache = new SerObjectInfoCache(_objectType);
 
-                _cache._memberInfos = FormatterServices.GetSerializableMembers(_objectType, _context);
+                _cache._memberInfos = FormatterServices.GetSerializableMembers(_objectType, _context, _isser);
                 int count = _cache._memberInfos.Length;
                 _cache._memberNames = new string[count];
                 _cache._memberTypes = new Type[count];
@@ -345,6 +350,7 @@ namespace Net9.BinaryFormatter
 
         internal ISerializationSurrogate? _serializationSurrogate;
         internal StreamingContext _context;
+        internal IIsSerializable? _isser;
 
         // Si Read
         internal List<Type>? _memberTypesList;
@@ -367,10 +373,11 @@ namespace Net9.BinaryFormatter
             ObjectManager? objectManager,
             SerObjectInfoInit? serObjectInfoInit,
             IFormatterConverter? converter,
+            IIsSerializable? isser,
             bool bSimpleAssembly)
         {
             ReadObjectInfo roi = GetObjectInfo(serObjectInfoInit);
-            roi.Init(objectType, surrogateSelector, context, objectManager, serObjectInfoInit, converter, bSimpleAssembly);
+            roi.Init(objectType, surrogateSelector, context, objectManager, serObjectInfoInit, converter, isser, bSimpleAssembly);
             return roi;
         }
 
@@ -381,6 +388,7 @@ namespace Net9.BinaryFormatter
             ObjectManager? objectManager,
             SerObjectInfoInit? serObjectInfoInit,
             IFormatterConverter? converter,
+            IIsSerializable? isser,
             bool bSimpleAssembly)
         {
             _objectType = objectType;
@@ -388,6 +396,7 @@ namespace Net9.BinaryFormatter
             _context = context;
             _serObjectInfoInit = serObjectInfoInit;
             _formatterConverter = converter;
+            _isser = isser;
             _isSimpleAssembly = bSimpleAssembly;
 
             InitReadConstructor(objectType, surrogateSelector, context);
@@ -402,10 +411,11 @@ namespace Net9.BinaryFormatter
             ObjectManager? objectManager,
             SerObjectInfoInit? serObjectInfoInit,
             IFormatterConverter? converter,
+            IIsSerializable? isser,
             bool bSimpleAssembly)
         {
             ReadObjectInfo roi = GetObjectInfo(serObjectInfoInit);
-            roi.Init(objectType, memberNames, memberTypes, surrogateSelector, context, objectManager, serObjectInfoInit, converter, bSimpleAssembly);
+            roi.Init(objectType, memberNames, memberTypes, surrogateSelector, context, objectManager, serObjectInfoInit, converter, isser, bSimpleAssembly);
             return roi;
         }
 
@@ -418,6 +428,7 @@ namespace Net9.BinaryFormatter
             ObjectManager? objectManager,
             SerObjectInfoInit? serObjectInfoInit,
             IFormatterConverter? converter,
+            IIsSerializable? isser,
             bool bSimpleAssembly)
         {
             _objectType = objectType;
@@ -427,6 +438,7 @@ namespace Net9.BinaryFormatter
             _context = context;
             _serObjectInfoInit = serObjectInfoInit;
             _formatterConverter = converter;
+            _isser = isser;
             _isSimpleAssembly = bSimpleAssembly;
             if (memberTypes != null)
             {
@@ -488,7 +500,7 @@ namespace Net9.BinaryFormatter
         private void InitMemberInfo()
         {
             _cache = new SerObjectInfoCache(_objectType!);
-            _cache._memberInfos = FormatterServices.GetSerializableMembers(_objectType!, _context);
+            _cache._memberInfos = FormatterServices.GetSerializableMembers(_objectType!, _context, _isser);
             _count = _cache._memberInfos.Length;
             _cache._memberNames = new string[_count];
             _cache._memberTypes = new Type[_count];

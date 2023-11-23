@@ -12,6 +12,7 @@ namespace Net9.BinaryFormatter
         internal ISurrogateSelector? _surrogates;
         internal StreamingContext _context;
         internal SerializationBinder? _binder;
+        internal IIsSerializable? _isser;
         internal FormatterTypeStyle _typeFormat = FormatterTypeStyle.TypesAlways; // For version resiliency, always put out types
         internal FormatterAssemblyStyle _assemblyFormat = FormatterAssemblyStyle.Simple;
         internal TypeFilterLevel _securityLevel = TypeFilterLevel.Full;
@@ -23,6 +24,7 @@ namespace Net9.BinaryFormatter
         public ISurrogateSelector? SurrogateSelector { get { return _surrogates; } set { _surrogates = value; } }
         public SerializationBinder? Binder { get { return _binder; } set { _binder = value; } }
         public StreamingContext Context { get { return _context; } set { _context = value; } }
+        public IIsSerializable? Isser { get { return _isser; } set { _isser = value; } }
 
         public BinaryFormatter() : this(null, new StreamingContext(StreamingContextStates.All))
         {

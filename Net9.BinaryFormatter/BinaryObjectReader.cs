@@ -20,6 +20,7 @@ namespace Net9.BinaryFormatter
         internal ObjectManager? _objectManager;
         internal InternalFE _formatterEnums;
         internal SerializationBinder? _binder;
+        internal IIsSerializable? _isser;
 
         // Top object and headers
         internal long _topId;
@@ -63,7 +64,8 @@ namespace Net9.BinaryFormatter
             }
         }
 
-        internal ObjectReader(Stream stream, ISurrogateSelector? selector, StreamingContext context, InternalFE formatterEnums, SerializationBinder? binder)
+        internal ObjectReader(Stream stream, ISurrogateSelector? selector, StreamingContext context, InternalFE formatterEnums, 
+            SerializationBinder? binder, IIsSerializable? isser)
         {
             ArgumentNullException.ThrowIfNull(stream);
 
@@ -72,6 +74,7 @@ namespace Net9.BinaryFormatter
             _context = context;
             _binder = binder;
             _formatterEnums = formatterEnums;
+            _isser = isser;
         }
 
         [RequiresDynamicCode(ObjectReaderUnreferencedCodeMessage)]
@@ -138,7 +141,8 @@ namespace Net9.BinaryFormatter
         private void CheckSerializable(Type t)
         {
             //if (!t.IsSerializable && !HasSurrogate(t))
-            if (!SerializeUtil.IsSerializable(t) && !HasSurrogate(t))
+            //if (!SerializeUtil.IsSerializable(t) && !HasSurrogate(t))
+            if (!(_isser ?? DefaultIsSerializable.Instance).IsSerializable(t) && !HasSurrogate(t))
             {
                 throw new SerializationException(SR.Format(CultureInfo.InvariantCulture, SR.Serialization_NonSerType, t.FullName!, t.Assembly.FullName!));
             }
@@ -162,7 +166,7 @@ namespace Net9.BinaryFormatter
         internal ReadObjectInfo CreateReadObjectInfo(
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type objectType)
         {
-            return ReadObjectInfo.Create(objectType, _surrogates, _context, _objectManager, _serObjectInfoInit, _formatterConverter, _isSimpleAssembly);
+            return ReadObjectInfo.Create(objectType, _surrogates, _context, _objectManager, _serObjectInfoInit, _formatterConverter, _isser, _isSimpleAssembly);
         }
 
         internal ReadObjectInfo CreateReadObjectInfo(
@@ -170,7 +174,8 @@ namespace Net9.BinaryFormatter
             string[] memberNames,
             Type[]? memberTypes)
         {
-            return ReadObjectInfo.Create(objectType, memberNames, memberTypes, _surrogates, _context, _objectManager, _serObjectInfoInit, _formatterConverter, _isSimpleAssembly);
+            return ReadObjectInfo.Create(objectType, memberNames, memberTypes, _surrogates, _context, _objectManager, _serObjectInfoInit, _formatterConverter,
+                _isser, _isSimpleAssembly);
         }
 
         [RequiresDynamicCode(ObjectReaderDynamicCodeMessage)]
@@ -298,7 +303,8 @@ namespace Net9.BinaryFormatter
                 TopObject = pr._newObj;
             }
 
-            pr._objectInfo ??= ReadObjectInfo.Create(pr._dtType, _surrogates, _context, _objectManager, _serObjectInfoInit, _formatterConverter, _isSimpleAssembly);
+            pr._objectInfo ??= ReadObjectInfo.Create(pr._dtType, _surrogates, _context, _objectManager, _serObjectInfoInit, _formatterConverter, 
+                _isser, _isSimpleAssembly);
         }
 
         // End of object encountered in stream

@@ -43,6 +43,9 @@ public class Program
 
         bf.SurrogateSelector = cs;
 
+        var issers = new IsSerializableHandlers();
+        bf.Isser = issers;
+
         var hs= new HashSet<int>() { 5 };
         var sta = new Stack<int>();
         sta.Push(45);

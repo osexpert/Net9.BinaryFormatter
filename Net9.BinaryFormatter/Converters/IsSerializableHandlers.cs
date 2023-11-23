@@ -1,13 +1,14 @@
-﻿using System.Reflection;
+﻿using System.ComponentModel;
+using System.Reflection;
 
 namespace Net9.BinaryFormatter
 {
 
-    public class IsSerializableHandlers
+    public class IsSerializableHandlers : IIsSerializable
     {
-        public static List<IIsSerializable> Handlers { get; set; } = GetDefaultHandlers();
+        public List<IIsSerializable> Handlers { get; }
 
-        public static bool IsSerializable(Type type)
+        public bool IsSerializable(Type type)
         {
             foreach (var h in Handlers)
                 if (h.IsSerializable(type))
@@ -16,12 +17,23 @@ namespace Net9.BinaryFormatter
             return false;
         }
 
+        public IsSerializableHandlers(bool addDefaultHandlers = true)
+        {
+            if (addDefaultHandlers)
+            {
+                Handlers = GetDefaultHandlers();
+            }
+            else
+            {
+                Handlers = new();
+            }
+        }
 
         private static List<IIsSerializable> GetDefaultHandlers()
         {
             var res = new List<IIsSerializable>();
-            res.Add(new CommonSerializableTypes());
-            res.Add(new SerializableAttributeTypes());
+            res.Add(new SerializableByAttribute());
+            res.Add(new SerializableGoodTypes());
             return res;
         }
     }
@@ -32,46 +44,25 @@ namespace Net9.BinaryFormatter
         bool IsSerializable(Type type);
     }
 
-    public class SerializableAttributeTypes : IIsSerializable
+    public class SerializableByAttribute : IIsSerializable
     {
+        public bool DelegateIsSerializable { get; set; } = false;
+
+        /// <summary>
+        /// Orginal implementation in net8
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public bool IsSerializable(Type type)
-        {
-            return type.GetCustomAttribute<SerializableAttribute>() != null;
-        }
-    }
-
-    public class CommonSerializableTypes : IIsSerializable
-    {
-        HashSet<Type> _genTypes = new();
-        HashSet<Type> _types = new();
-
-        public CommonSerializableTypes()
-        {
-            _types.Add(typeof(Version));
-            _types.Add(typeof(ValueType));
-            _types.Add(typeof(DateTime));
-            _types.Add(typeof(TimeOnly));
-            _types.Add(typeof(DateOnly));
-
-            _genTypes.Add(typeof(List<>));
-            _genTypes.Add(typeof(Stack<>));
-            _genTypes.Add(typeof(KeyValuePair<,>));
+        { 
+            return IsSerializableStatic(type, DelegateIsSerializable);
         }
 
-        public bool IsSerializable(Type type)
-        {
-            if (type.IsGenericType)
-            {
-                if (_genTypes.Contains(type.GetGenericTypeDefinition()))
-                    return true;
-            }
-            else
-            {
-                if (_types.Contains(type))
-                    return true;
-            }
+        internal static bool IsSerializableStatic(Type type, bool delegateIsSerializable)
+        { 
+            if (type.GetCustomAttribute<SerializableAttribute>() != null)
+                return true;
 
-            
             //weird case?
             Type? underlyingType = type.UnderlyingSystemType;
             if (TypeHelper.IsRuntimeType(underlyingType))// is RuntimeType)
@@ -82,14 +73,104 @@ namespace Net9.BinaryFormatter
                     // System.Enum and System.MulticastDelegate. However, a generic parameter can
                     // have a base type constraint that is Delegate or even a real delegate type.
                     // Let's maintain compatibility and return true for them.
-                    if ((underlyingType == typeof(Delegate) && Net9Settings.DelegateIsSerializable) || underlyingType == typeof(Enum))
+                    // SECURITY: made the delegate logic OPTIN
+                    if ((delegateIsSerializable && underlyingType == typeof(Delegate)) || underlyingType == typeof(Enum))
                         return true;
-
-
 
                     underlyingType = underlyingType.BaseType;
                 }
                 while (underlyingType != null);
+            }
+
+            return false;
+
+
+            //    get
+            //    {
+            //        if ((GetAttributeFlagsImpl() & TypeAttributes.Serializable) != 0)
+            //            return true;
+
+            //        Type? underlyingType = UnderlyingSystemType;
+            //        if (underlyingType is RuntimeType)
+            //        {
+            //            do
+            //            {
+            //                // In all sane cases we only need to compare the direct level base type with
+            //                // System.Enum and System.MulticastDelegate. However, a generic parameter can
+            //                // have a base type constraint that is Delegate or even a real delegate type.
+            //                // Let's maintain compatibility and return true for them.
+            //                if (underlyingType == typeof(Delegate) || underlyingType == typeof(Enum))
+            //                    return true;
+
+            //                underlyingType = underlyingType.BaseType;
+            //            }
+            //            while (underlyingType != null);
+            //        }
+
+            //        return false;
+            //    }
+            //}
+        }
+    }
+
+    internal class DefaultIsSerializable : IIsSerializable
+    {
+        public static readonly DefaultIsSerializable Instance = new DefaultIsSerializable();
+
+        //public bool DelegateIsSerializable { get; set; } = false;
+
+        public bool IsSerializable(Type type)
+        {
+            return SerializableByAttribute.IsSerializableStatic(type, delegateIsSerializable: false);
+        }
+    }
+
+
+    public class SerializableGoodTypes : IIsSerializable
+    {
+        HashSet<Type> _genericTypes = new();
+        HashSet<Type> _types = new();
+
+        //public bool DelegateIsSerializable { get; set; } = false;
+        public void AddGoodType(Type type)
+        {
+            if (type.IsGenericType)
+            {
+                _genericTypes.Add(type);
+            }
+            else
+            {
+                _types.Add(type);
+            }
+        }
+
+        public SerializableGoodTypes(bool addDefaultTypes = true)
+        {
+            if (addDefaultTypes)
+            {
+                _types.Add(typeof(Version));
+                _types.Add(typeof(ValueType));
+                _types.Add(typeof(DateTime));
+                _types.Add(typeof(TimeOnly));
+                _types.Add(typeof(DateOnly));
+
+                _genericTypes.Add(typeof(List<>));
+                _genericTypes.Add(typeof(Stack<>));
+                _genericTypes.Add(typeof(KeyValuePair<,>));
+            }
+        }
+
+        public bool IsSerializable(Type type)
+        {
+            if (type.IsGenericType)
+            {
+                if (_genericTypes.Contains(type) || _genericTypes.Contains(type.GetGenericTypeDefinition()))
+                    return true;
+            }
+            else
+            {
+                if (_types.Contains(type))
+                    return true;
             }
 
             return false;

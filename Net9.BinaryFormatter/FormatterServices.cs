@@ -10,7 +10,6 @@ using System.Text;
 
 namespace Net9.BinaryFormatter
 {
-    //[Obsolete(Obsoletions.LegacyFormatterMessage, DiagnosticId = Obsoletions.LegacyFormatterDiagId, UrlFormat = Obsoletions.SharedUrlFormat)]
     public static class FormatterServices
     {
         private static readonly ConcurrentDictionary<MemberHolder, MemberInfo[]> s_memberInfoTable = new ConcurrentDictionary<MemberHolder, MemberInfo[]>();
@@ -20,7 +19,7 @@ namespace Net9.BinaryFormatter
                             "but the input type is annotated with All, so all of its base types are also All.")]
         private static FieldInfo[] InternalGetSerializableMembers(
             // currently the only way to preserve base, non-public fields is to use All
-            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type)
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type, IIsSerializable? isser)
         {
             Debug.Assert(type != null);
 
@@ -30,7 +29,8 @@ namespace Net9.BinaryFormatter
             }
 
             //if (!type.IsSerializable)
-            if (!SerializeUtil.IsSerializable(type))
+            //if (!SerializeUtil.IsSerializable(type))
+            if (!(isser ?? DefaultIsSerializable.Instance).IsSerializable(type))
             {
                 throw new SerializationException(SR.Format(SR.Serialization_NonSerType, type.FullName, type.Assembly.FullName));
             }
@@ -52,8 +52,9 @@ namespace Net9.BinaryFormatter
                     for (int i = 0; i < parentTypeCount; i++)
                     {
                         parentType = parentTypes![i];
-                       // if (!parentType.IsSerializable)
-                        if (!SerializeUtil.IsSerializable(parentType))
+                        // if (!parentType.IsSerializable)
+                        //if (!SerializeUtil.IsSerializable(parentType))
+                        if (!(isser ?? DefaultIsSerializable.Instance).IsSerializable(parentType))
                         {
                             throw new SerializationException(SR.Format(SR.Serialization_NonSerType, parentType.FullName, parentType.Module.Assembly.FullName));
                         }
@@ -167,14 +168,14 @@ namespace Net9.BinaryFormatter
         }
 
         public static MemberInfo[] GetSerializableMembers(
-            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type)
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type, IIsSerializable isser)
         {
-            return GetSerializableMembers(type, new StreamingContext(StreamingContextStates.All));
+            return GetSerializableMembers(type, new StreamingContext(StreamingContextStates.All), isser);
         }
 
         public static MemberInfo[] GetSerializableMembers(
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type,
-            StreamingContext context)
+            StreamingContext context, IIsSerializable? isser)
         {
             ArgumentNullException.ThrowIfNull(type);
 
@@ -182,7 +183,7 @@ namespace Net9.BinaryFormatter
             // Otherwise, get them and add them.
             return s_memberInfoTable.GetOrAdd(
                 new MemberHolder(type, context),
-                mh => InternalGetSerializableMembers(mh._memberType));
+                mh => InternalGetSerializableMembers(mh._memberType, isser));
         }
 
         public static object GetUninitializedObject(
