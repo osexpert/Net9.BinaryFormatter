@@ -32,3 +32,6 @@ bf.IsSerializable = new IsSerializableHandlers(); // add default IsSerializable 
 ```
 So this is very far from a drop in replacement and require a lot of manual work to switch over. So when switching, might just as well switch to `System.Text.Json`. But alternatives are good, and who knows, in some very special cases, switching to `System.Text.Json` may not be possible.
 
+Links:
+* https://github.com/dotnet/designs/blob/main/accepted/2020/better-obsoletion/binaryformatter-obsoletion.md
+* https://community.devexpress.com/blogs/news/archive/2023/11/07/updates-on-microsoft-s-binaryformatter-obsoletion-strategy.aspx
