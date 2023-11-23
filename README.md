@@ -13,7 +13,7 @@ SerializableAttribute
 NonSerializedAttribute
 ISerializable
 ```
-It also does not use `FieldAttributes.NotSerialized` or `Type.IsSerializable`.
+It also does not use `FieldAttributes.NotSerialized` or `Type.IsSerializable (TypeAttributes.Serializable)`.
 
 Since it is independent, it also means it can not do anything out of the box, since no types is attributed `[Net9.BinaryFormatter.Serializable]` or implementing `Net9.BinaryFormatter.ISerializable`.
 So you would need to change your code:
