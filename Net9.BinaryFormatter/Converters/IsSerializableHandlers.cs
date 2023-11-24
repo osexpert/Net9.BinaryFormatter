@@ -109,13 +109,15 @@ namespace Net9.BinaryFormatter
         }
     }
 
-    internal class DefaultIsSerializable : IIsSerializable
+    public class DefaultIsSerializable //: IIsSerializable
     {
-        public static readonly DefaultIsSerializable Instance = new DefaultIsSerializable();
+        //public static readonly DefaultIsSerializable Instance = new DefaultIsSerializable();
 
         //public bool DelegateIsSerializable { get; set; } = false;
 
-        public bool IsSerializable(Type type)
+//        bool IIsSerializable.IsSerializable(Type type) => IsSerializable(type);
+
+        public static bool IsSerializable(Type type)
         {
             return SerializableByAttribute.IsSerializableStatic(type);//, delegateIsSerializable: false);
         }
@@ -199,5 +201,16 @@ namespace Net9.BinaryFormatter
         }
     }
 
+
+
+    public class DefaultIsNotSerialized
+    {
+        //public static readonly DefaultIsNotSerialized Instance = new DefaultIsNotSerialized();
+
+        public static bool IsNotSerialized(FieldInfo field)
+        {
+            return field.GetCustomAttribute<NonSerializedAttribute>() != null;
+        }
+    }
 
 }

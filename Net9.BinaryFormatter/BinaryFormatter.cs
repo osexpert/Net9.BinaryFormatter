@@ -14,8 +14,8 @@ namespace Net9.BinaryFormatter
         internal ISurrogateSelector? _surrogates;
         internal StreamingContext _context;
         internal SerializationBinder? _binder;
-        internal Func<Type, bool> _isSerializable = DefaultIsSerializable.Instance.IsSerializable;
-        internal Func<FieldInfo, bool> _isNotSerialized = (field) => field.GetCustomAttribute<NonSerializedAttribute>() != null;
+        internal Func<Type, bool> _isSerializable = DefaultIsSerializable.IsSerializable;
+        internal Func<FieldInfo, bool> _isNotSerialized = DefaultIsNotSerialized.IsNotSerialized;
         internal FormatterTypeStyle _typeFormat = FormatterTypeStyle.TypesAlways; // For version resiliency, always put out types
         internal FormatterAssemblyStyle _assemblyFormat = FormatterAssemblyStyle.Simple;
         internal TypeFilterLevel _securityLevel = TypeFilterLevel.Full;

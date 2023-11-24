@@ -26,7 +26,7 @@ namespace Net9.BinaryFormatter
                 _securityLevel = _securityLevel,
             };
 
-            var reader = new ObjectReader(serializationStream, _surrogates, _context, formatterEnums, _binder, _isSerializable)
+            var reader = new ObjectReader(serializationStream, _surrogates, _context, formatterEnums, _binder, _isSerializable, _isNotSerialized)
             {
                 _crossAppDomainArray = _crossAppDomainArray
             };

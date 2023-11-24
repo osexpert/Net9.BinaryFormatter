@@ -379,10 +379,11 @@ namespace Net9.BinaryFormatter
             SerObjectInfoInit? serObjectInfoInit,
             IFormatterConverter? converter,
             Func<Type, bool> isSerializable,
+            Func<FieldInfo, bool> isNotSerialized,
             bool bSimpleAssembly)
         {
             ReadObjectInfo roi = GetObjectInfo(serObjectInfoInit);
-            roi.Init(objectType, surrogateSelector, context, objectManager, serObjectInfoInit, converter, isSerializable, bSimpleAssembly);
+            roi.Init(objectType, surrogateSelector, context, objectManager, serObjectInfoInit, converter, isSerializable, isNotSerialized, bSimpleAssembly);
             return roi;
         }
 
@@ -394,6 +395,7 @@ namespace Net9.BinaryFormatter
             SerObjectInfoInit? serObjectInfoInit,
             IFormatterConverter? converter,
             Func<Type, bool> isSerializable,
+            Func<FieldInfo, bool> isNotSerialized,
             bool bSimpleAssembly)
         {
             _objectType = objectType;
@@ -402,6 +404,7 @@ namespace Net9.BinaryFormatter
             _serObjectInfoInit = serObjectInfoInit;
             _formatterConverter = converter;
             _isSerializable = isSerializable;
+            _isNotSerialized = isNotSerialized;
             _isSimpleAssembly = bSimpleAssembly;
 
             InitReadConstructor(objectType, surrogateSelector, context);
@@ -417,10 +420,11 @@ namespace Net9.BinaryFormatter
             SerObjectInfoInit? serObjectInfoInit,
             IFormatterConverter? converter,
             Func<Type, bool> isSerializable,
+            Func<FieldInfo, bool> isNotSerialized,
             bool bSimpleAssembly)
         {
             ReadObjectInfo roi = GetObjectInfo(serObjectInfoInit);
-            roi.Init(objectType, memberNames, memberTypes, surrogateSelector, context, objectManager, serObjectInfoInit, converter, isSerializable, bSimpleAssembly);
+            roi.Init(objectType, memberNames, memberTypes, surrogateSelector, context, objectManager, serObjectInfoInit, converter, isSerializable, isNotSerialized, bSimpleAssembly);
             return roi;
         }
 
@@ -434,6 +438,7 @@ namespace Net9.BinaryFormatter
             SerObjectInfoInit? serObjectInfoInit,
             IFormatterConverter? converter,
             Func<Type, bool> isSerializable,
+            Func<FieldInfo, bool> isNotSerialized,
             bool bSimpleAssembly)
         {
             _objectType = objectType;
@@ -444,6 +449,7 @@ namespace Net9.BinaryFormatter
             _serObjectInfoInit = serObjectInfoInit;
             _formatterConverter = converter;
             _isSerializable = isSerializable;
+            _isNotSerialized = isNotSerialized;
             _isSimpleAssembly = bSimpleAssembly;
             if (memberTypes != null)
             {
