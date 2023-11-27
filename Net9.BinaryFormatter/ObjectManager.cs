@@ -35,7 +35,7 @@ namespace Net9.BinaryFormatter
             _context = context;
         }
 
-        private bool CanCallGetType(object? obj) => true;
+        //private bool CanCallGetType(object? obj) => true;
 
         internal object? TopObject
         {
@@ -438,14 +438,7 @@ namespace Net9.BinaryFormatter
                             //at this point is set the member into the Object
                             object? holderValue = tempObjectHolder.ObjectValue;
                             Debug.Assert(holderValue != null);
-                            if (CanCallGetType(holderValue))
-                            {
-                                si.UpdateValue((string)fixupInfo, holderValue, holderValue.GetType());
-                            }
-                            else
-                            {
-                                si.UpdateValue((string)fixupInfo, holderValue, typeof(MarshalByRefObject));
-                            }
+                            si.UpdateValue((string)fixupInfo, holderValue, holderValue.GetType());
                             //Decrement our total number of fixups left to do.
                             fixupsPerformed++;
                             fixups._values[i] = null;
@@ -674,9 +667,7 @@ namespace Net9.BinaryFormatter
 
             if (_selector != null)
             {
-                Type selectorType = CanCallGetType(obj) ?
-                    obj.GetType() :
-                    typeof(MarshalByRefObject);
+                Type selectorType = obj.GetType();
 
                 //If we need a surrogate for this object, lets find it now.
                 surrogate = _selector.GetSurrogate(selectorType, _context);
