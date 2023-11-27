@@ -47,6 +47,8 @@ public class Program
 
         bf.SurrogateSelector = new ConverterSelector();
 
+        bf.Control.IsSerializableHandlers = new IsSerializableHandlers();
+
         //bf.Control = 
      //   bf.IsSerializable = new IsSerializableHandlers().IsSerializable;
 //        bf.Binder
@@ -58,17 +60,17 @@ public class Program
 
        
 
-        bf.Serialize(ms, Lol42.Test);
+        bf.Serialize(ms, list);
 
 
 
         ms.Position = 0;
 
-        var g = bf.Deserialize(ms);
+        var g = bf.Deserialize< List<Dictionary<int, string>>>(ms);
 
-        var sta2 = (Stack<int>)g;
-        var p1 = sta2.Pop();
-        var p2 = sta2.Pop();
+        //var sta2 = (Stack<int>)g;
+        //var p1 = sta2.Pop();
+        //var p2 = sta2.Pop();
 
         Console.WriteLine("Hello, World!");
     }

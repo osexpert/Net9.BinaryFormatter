@@ -9,6 +9,20 @@ namespace Net9.BinaryFormatter
     {
         [RequiresDynamicCode(IFormatter.RequiresDynamicCodeMessage)]
         [RequiresUnreferencedCode(IFormatter.RequiresUnreferencedCodeMessage)]
+        public T Deserialize<T>(Stream serializationStream)
+        {
+            // TODO: from the graph of types in T (object not allowed), set these types to the list of allowed types.
+            // If a type not in the graph is in the stream, it will throw.
+            // This can protect agains random streams with random types.
+            // More:
+            // - possibility to ignore other types? (ingore instead of failing)
+            // - ignore members in stream but not in classes? (instead of failing)
+            
+            return (T)Deserialize(serializationStream);
+        }
+
+        [RequiresDynamicCode(IFormatter.RequiresDynamicCodeMessage)]
+        [RequiresUnreferencedCode(IFormatter.RequiresUnreferencedCodeMessage)]
         public object Deserialize(Stream serializationStream)
         {
             ArgumentNullException.ThrowIfNull(serializationStream);
