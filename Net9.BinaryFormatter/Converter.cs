@@ -10,9 +10,9 @@ namespace Net9.BinaryFormatter
 {
     internal static class Converter
     {
-        internal static readonly Type s_typeofISerializable = typeof(ISerializable);
+        //internal static readonly Type s_typeofISerializable = typeof(ISerializable);
         internal static readonly Type s_typeofString = typeof(string);
-        internal static readonly Type s_typeofConverter = typeof(Converter);
+        //internal static readonly Type s_typeofConverter = typeof(Converter);
         internal static readonly Type s_typeofBoolean = typeof(bool);
         internal static readonly Type s_typeofByte = typeof(byte);
         internal static readonly Type s_typeofChar = typeof(char);
@@ -64,7 +64,6 @@ namespace Net9.BinaryFormatter
         internal static readonly Type s_typeofUInt16Array = typeof(ushort[]);
         internal static readonly Type s_typeofUInt32Array = typeof(uint[]);
         internal static readonly Type s_typeofUInt64Array = typeof(ulong[]);
-        internal static readonly Type s_typeofMarshalByRefObject = typeof(MarshalByRefObject);
 
         private const int PrimitiveTypeEnumLength = 17; //Number of PrimitiveTypeEnums
 

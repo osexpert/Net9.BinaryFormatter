@@ -32,6 +32,28 @@ namespace Net9.BinaryFormatter
             HResult = HResults.COR_E_SERIALIZATION;
         }
 
+        //        [EditorBrowsable(EditorBrowsableState.Never)]
+        //#pragma warning disable SYSLIB0051 // Type or member is obsolete
+        //        protected SerializationException(SerializationInfo info, StreamingContext context) : base(GetBaseInfo(info), GetBaseContext(context))
+        //#pragma warning restore SYSLIB0051 // Type or member is obsolete
+        //        {
+
+        //        }
+
+        //        private static System.Runtime.Serialization.StreamingContext GetBaseContext(StreamingContext context)
+        //        {
+        //            //System.Runtime.Serialization.StreamingContextStates.CrossAppDomain
+        //#pragma warning disable SYSLIB0050 // Type or member is obsolete
+        //            return new System.Runtime.Serialization.StreamingContext((System.Runtime.Serialization.StreamingContextStates)context.State, context.Context);
+        //#pragma warning restore SYSLIB0050 // Type or member is obsolete
+        //        }
+
+        //        private static System.Runtime.Serialization.SerializationInfo GetBaseInfo(SerializationInfo info)
+        //        {
+        //            var res = new System.Runtime.Serialization.SerializationInfo(info.ObjectType, info..);
+        //        }
+
+
         [EditorBrowsable(EditorBrowsableState.Never)]
         protected SerializationException(SerializationInfo info, StreamingContext context) : base(
             info.GetString("Message"),
@@ -52,18 +74,18 @@ namespace Net9.BinaryFormatter
 
             ArgumentNullException.ThrowIfNull(info);
 
-//            Message = info.GetString("Message"); // Do not rename (binary serialization)
-//            Data = (IDictionary?)(info.GetValueNoThrow("Data", typeof(IDictionary))); // Do not rename (binary serialization)
-//            InnerException = (Exception?)(info.GetValue("InnerException", typeof(Exception))); // Do not rename (binary serialization)
+            //            Message = info.GetString("Message"); // Do not rename (binary serialization)
+            //            Data = (IDictionary?)(info.GetValueNoThrow("Data", typeof(IDictionary))); // Do not rename (binary serialization)
+            //            InnerException = (Exception?)(info.GetValue("InnerException", typeof(Exception))); // Do not rename (binary serialization)
             HelpLink = info.GetString("HelpURL"); // Do not rename (binary serialization)
-//            _stackTraceString = info.GetString("StackTraceString"); // Do not rename (binary serialization)
-//            _remoteStackTraceString = info.GetString("RemoteStackTraceString"); // Do not rename (binary serialization)
+                                                  //            _stackTraceString = info.GetString("StackTraceString"); // Do not rename (binary serialization)
+                                                  //            _remoteStackTraceString = info.GetString("RemoteStackTraceString"); // Do not rename (binary serialization)
             HResult = info.GetInt32("HResult"); // Do not rename (binary serialization)
             Source = info.GetString("Source"); // Do not rename (binary serialization)
 
             RestoreRemoteStackTrace(info, context);
         }
- 
+
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -87,18 +109,18 @@ namespace Net9.BinaryFormatter
 
             //_source ??= Source; // Set the Source information correctly before serialization
 
-//            info.AddValue("ClassName", GetClassName(), typeof(string)); // Do not rename (binary serialization)
+            //            info.AddValue("ClassName", GetClassName(), typeof(string)); // Do not rename (binary serialization)
             info.AddValue("Message", Message, typeof(string)); // Do not rename (binary serialization)
             info.AddValue("Data", Data, typeof(IDictionary)); // Do not rename (binary serialization)
             info.AddValue("InnerException", InnerException, typeof(Exception)); // Do not rename (binary serialization)
             info.AddValue("HelpURL", HelpLink, typeof(string)); // Do not rename (binary serialization)
-  //          info.AddValue("StackTraceString", SerializationStackTraceString, typeof(string)); // Do not rename (binary serialization)
-//            info.AddValue("RemoteStackTraceString", _remoteStackTraceString, typeof(string)); // Do not rename (binary serialization)
+                                                                //          info.AddValue("StackTraceString", SerializationStackTraceString, typeof(string)); // Do not rename (binary serialization)
+                                                                //            info.AddValue("RemoteStackTraceString", _remoteStackTraceString, typeof(string)); // Do not rename (binary serialization)
             info.AddValue("RemoteStackIndex", 0, typeof(int)); // Do not rename (binary serialization)
             info.AddValue("ExceptionMethod", null, typeof(string)); // Do not rename (binary serialization)
             info.AddValue("HResult", HResult); // Do not rename (binary serialization)
             info.AddValue("Source", Source, typeof(string)); // Do not rename (binary serialization)
-//            info.AddValue("WatsonBuckets", SerializationWatsonBuckets, typeof(byte[])); // Do not rename (binary serialization)
+                                                             //            info.AddValue("WatsonBuckets", SerializationWatsonBuckets, typeof(byte[])); // Do not rename (binary serialization)
         }
 
         void RestoreRemoteStackTrace(SerializationInfo info, StreamingContext context)
@@ -109,7 +131,7 @@ namespace Net9.BinaryFormatter
             // We use the no throw version since we could be deserializing a pre-V4
             // exception object that may not have this entry. In such a case, we would
             // get null.
-//            _watsonBuckets = (byte[]?)info.GetValueNoThrow("WatsonBuckets", typeof(byte[])); // Do not rename (binary serialization)
+            //            _watsonBuckets = (byte[]?)info.GetValueNoThrow("WatsonBuckets", typeof(byte[])); // Do not rename (binary serialization)
 
             // If we are constructing a new exception after a cross-appdomain call...
             if (context.State == StreamingContextStates.CrossAppDomain)
@@ -125,8 +147,8 @@ namespace Net9.BinaryFormatter
                 // Even if this exception is NOT thrown, things will still work as expected
                 //  because the StackTrace property returns the concatenation of the
                 //  _remoteStackTraceString and the _stackTraceString.
-//                _remoteStackTraceString += _stackTraceString;
-//                _stackTraceString = null;
+                //                _remoteStackTraceString += _stackTraceString;
+                //                _stackTraceString = null;
             }
         }
 

@@ -26,7 +26,7 @@ namespace Net9.BinaryFormatter
                 _securityLevel = _securityLevel,
             };
 
-            var reader = new ObjectReader(serializationStream, _surrogates, _context, formatterEnums, _binder, _isSerializable, _isNotSerialized)
+            var reader = new ObjectReader(serializationStream, _surrogates, _context, formatterEnums, _binder, _control)
             {
                 _crossAppDomainArray = _crossAppDomainArray
             };
@@ -65,7 +65,7 @@ namespace Net9.BinaryFormatter
             try
             {
                 BinaryFormatterEventSource.Log.SerializationStart();
-                var sow = new ObjectWriter(_surrogates, _context, formatterEnums, _binder, _isSerializable, _isNotSerialized);
+                var sow = new ObjectWriter(_surrogates, _context, formatterEnums, _binder, _control);
                 BinaryFormatterWriter binaryWriter = new BinaryFormatterWriter(serializationStream, sow, _typeFormat);
                 sow.Serialize(graph, binaryWriter);
                 _crossAppDomainArray = sow._crossAppDomainArray;

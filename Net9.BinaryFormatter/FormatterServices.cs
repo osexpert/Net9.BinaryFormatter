@@ -19,7 +19,7 @@ namespace Net9.BinaryFormatter
                             "but the input type is annotated with All, so all of its base types are also All.")]
         private static FieldInfo[] InternalGetSerializableMembers(
             // currently the only way to preserve base, non-public fields is to use All
-            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type, Func<Type, bool> isSerializable, Func<FieldInfo, bool> isNotSerialized)
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type, SerializationControl control)
         {
             Debug.Assert(type != null);
 
@@ -28,13 +28,13 @@ namespace Net9.BinaryFormatter
                 return Array.Empty<FieldInfo>();
             }
 
-            if (!isSerializable(type))
+            if (!control.IsSerializable(type))
             {
                 throw new SerializationException(SR.Format(SR.Serialization_NonSerType, type.FullName, type.Assembly.FullName));
             }
 
             // Get all of the serializable members in the class to be serialized.
-            FieldInfo[] typeMembers = GetSerializableFields(type, isNotSerialized);
+            FieldInfo[] typeMembers = GetSerializableFields(type, control);
 
             // If this class doesn't extend directly from object, walk its hierarchy and
             // get all of the private and assembly-access fields (e.g. all fields that aren't
@@ -50,7 +50,7 @@ namespace Net9.BinaryFormatter
                     for (int i = 0; i < parentTypeCount; i++)
                     {
                         parentType = parentTypes![i];
-                        if (!isSerializable(parentType))
+                        if (!control.IsSerializable(parentType))
                         {
                             throw new SerializationException(SR.Format(SR.Serialization_NonSerType, parentType.FullName, parentType.Module.Assembly.FullName));
                         }
@@ -60,7 +60,7 @@ namespace Net9.BinaryFormatter
                         foreach (FieldInfo field in typeFields)
                         {
                             // Family and Assembly fields will be gathered by the type itself.
-                            if (!isNotSerialized(field))
+                            if (!control.IsNotSerialized(field))
                             {
                                 allMembers.Add(new SerializationFieldInfo(field, typeName));
                             }
@@ -84,7 +84,7 @@ namespace Net9.BinaryFormatter
 
         private static FieldInfo[] GetSerializableFields(
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields)] Type type,
-            Func<FieldInfo, bool> isNotSerialized)
+            SerializationControl control)
         {
             // Get the list of all fields
             FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -92,7 +92,7 @@ namespace Net9.BinaryFormatter
             int countProper = 0;
             for (int i = 0; i < fields.Length; i++)
             {
-                if (isNotSerialized(fields[i]))
+                if (control.IsNotSerialized(fields[i]))
                 {
                     continue;
                 }
@@ -106,7 +106,7 @@ namespace Net9.BinaryFormatter
                 countProper = 0;
                 for (int i = 0; i < fields.Length; i++)
                 {
-                    if (isNotSerialized(fields[i]))
+                    if (control.IsNotSerialized(fields[i]))
                     {
                         continue;
                     }
@@ -162,14 +162,14 @@ namespace Net9.BinaryFormatter
         }
 
         public static MemberInfo[] GetSerializableMembers(
-            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type, Func<Type, bool> isSerializable, Func<FieldInfo, bool> isNotSerialized)
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type, SerializationControl control)
         {
-            return GetSerializableMembers(type, new StreamingContext(StreamingContextStates.All), isSerializable, isNotSerialized);
+            return GetSerializableMembers(type, new StreamingContext(StreamingContextStates.All), control);
         }
 
         public static MemberInfo[] GetSerializableMembers(
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type,
-            StreamingContext context, Func<Type, bool> isSerializable, Func<FieldInfo, bool> isNotSerialized)
+            StreamingContext context, SerializationControl control)
         {
             ArgumentNullException.ThrowIfNull(type);
 
@@ -177,7 +177,7 @@ namespace Net9.BinaryFormatter
             // Otherwise, get them and add them.
             return s_memberInfoTable.GetOrAdd(
                 new MemberHolder(type, context),
-                mh => InternalGetSerializableMembers(mh._memberType, isSerializable, isNotSerialized));
+                mh => InternalGetSerializableMembers(mh._memberType, control));
         }
 
         public static void CheckTypeSecurity(Type t, TypeFilterLevel securityLevel)

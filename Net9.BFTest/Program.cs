@@ -46,7 +46,9 @@ public class Program
         //cs.Converters.Add(new Net9.BinaryFormatter.Converters.DateTimeConverter());
 
         bf.SurrogateSelector = new ConverterSelector();
-        bf.IsSerializable = new IsSerializableHandlers().IsSerializable;
+
+        //bf.Control = 
+     //   bf.IsSerializable = new IsSerializableHandlers().IsSerializable;
 //        bf.Binder
 
         var hs= new HashSet<int>() { 5 };

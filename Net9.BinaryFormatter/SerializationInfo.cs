@@ -331,14 +331,12 @@ namespace Net9.BinaryFormatter
         {
             ArgumentNullException.ThrowIfNull(type);
 
-            //if (type is not RuntimeType)
-            //if (!type.IsAssignableFrom(_runtimeType))
             if (!TypeHelper.IsRuntimeType(type))
                 throw new ArgumentException(SR.Argument_MustBeRuntimeType);
 
             object? value = GetElement(name, out Type foundType);
 
-            if (ReferenceEquals(foundType, type) || type.IsAssignableFrom(foundType) || value == null)
+            if (ReferenceEquals(foundType, type) || foundType.IsAssignableTo(type) || value == null)
             {
                 return value;
             }
@@ -357,7 +355,7 @@ namespace Net9.BinaryFormatter
             if (value == null)
                 return null;
 
-            if (ReferenceEquals(foundType, type) || type.IsAssignableFrom(foundType))
+            if (ReferenceEquals(foundType, type) || (foundType?.IsAssignableTo(type) ?? false))
             {
                 return value;
             }
