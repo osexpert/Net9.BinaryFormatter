@@ -10,7 +10,7 @@ namespace Net9.BinaryFormatter
 {
     internal static class Converter
     {
-        //internal static readonly Type s_typeofISerializable = typeof(ISerializable);
+        internal static readonly Type s_typeofISerializable = typeof(ISerializable);
         internal static readonly Type s_typeofString = typeof(string);
         //internal static readonly Type s_typeofConverter = typeof(Converter);
         internal static readonly Type s_typeofBoolean = typeof(bool);
@@ -44,6 +44,10 @@ namespace Net9.BinaryFormatter
         // I don't care about .NET Framework ....
         internal static readonly Assembly s_urtAssembly = s_typeofString.Assembly;
         internal static readonly string s_urtAssemblyString = s_urtAssembly.FullName!;
+
+        internal static readonly Assembly s_urtAlternativeAssembly = Assembly.Load("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
+        internal static readonly string s_urtAlternativeAssemblyString = s_urtAlternativeAssembly.FullName!;
+
 
         // Arrays
         internal static readonly Type s_typeofTypeArray = typeof(Type[]);

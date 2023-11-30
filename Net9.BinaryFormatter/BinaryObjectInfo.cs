@@ -105,14 +105,14 @@ namespace Net9.BinaryFormatter
                 }
                 InitSiWrite();
             }
-            else if (control.IsISerializable(obj))
+            else if (obj is ISerializable)
             {
                 if (!control.IsSerializable(_objectType))
                 {
                     throw new SerializationException(SR.Format(SR.Serialization_NonSerType, _objectType.FullName, _objectType.Assembly.FullName));
                 }
                 _si = new SerializationInfo(_objectType, converter);
-                control.GetObjectData(obj, _si, context);
+                ((ISerializable)obj).GetObjectData(_si, context);
                 InitSiWrite();
                 CheckTypeForwardedFrom(_cache, _objectType, _binderAssemblyString);
             }
@@ -172,7 +172,7 @@ namespace Net9.BinaryFormatter
                 _cache = new SerObjectInfoCache(objectType);
                 _isSi = true;
             }
-            else if (!ReferenceEquals(objectType, Converter.s_typeofObject) && control.IsISerializable(objectType))
+            else if (!ReferenceEquals(objectType, Converter.s_typeofObject) && objectType.IsAssignableTo(Converter.s_typeofISerializable))
             {
                 _si = new SerializationInfo(objectType, converter);
                 _cache = new SerObjectInfoCache(objectType);
@@ -398,7 +398,7 @@ namespace Net9.BinaryFormatter
             _control = control;
             _isSimpleAssembly = bSimpleAssembly;
 
-            InitReadConstructor(objectType, surrogateSelector, context, control);
+            InitReadConstructor(objectType, surrogateSelector, context);
         }
 
         internal static ReadObjectInfo Create(
@@ -445,11 +445,11 @@ namespace Net9.BinaryFormatter
             }
             if (objectType != null)
             {
-                InitReadConstructor(objectType, surrogateSelector, context, control);
+                InitReadConstructor(objectType, surrogateSelector, context);
             }
         }
 
-        private void InitReadConstructor(Type objectType, ISurrogateSelector? surrogateSelector, StreamingContext context, SerializationControl control)
+        private void InitReadConstructor(Type objectType, ISurrogateSelector? surrogateSelector, StreamingContext context)
         {
             BinaryFormatterEventSource.Log.DeserializingObject(objectType);
 
@@ -468,7 +468,7 @@ namespace Net9.BinaryFormatter
             {
                 _isSi = true;
             }
-            else if (!ReferenceEquals(objectType, Converter.s_typeofObject) && control.IsISerializable(objectType))
+            else if (!ReferenceEquals(objectType, Converter.s_typeofObject) && objectType.IsAssignableTo(Converter.s_typeofISerializable))
             {
                 _isSi = true;
             }

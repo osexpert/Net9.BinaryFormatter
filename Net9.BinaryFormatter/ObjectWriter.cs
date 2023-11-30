@@ -204,7 +204,7 @@ namespace Net9.BinaryFormatter
         // Writes a given object to the stream.
         [RequiresUnreferencedCode(ObjectWriterUnreferencedCodeMessage)]
         private void Write(WriteObjectInfo objectInfo,
-                           NameInfo? memberNameInfo,
+                           NameInfo memberNameInfo,
                            NameInfo typeNameInfo,
                            string[] memberNames,
                            Type[] memberTypes,
@@ -212,18 +212,21 @@ namespace Net9.BinaryFormatter
                            WriteObjectInfo[] memberObjectInfos)
         {
             int numItems = memberNames.Length;
+            (bool b, BinaryTypeEnum[]?)? res = null;
 
             Debug.Assert(_serWriter != null);
             if (memberNameInfo != null)
             {
                 memberNameInfo._objectId = objectInfo._objectId;
-                _serWriter.WriteObject(memberNameInfo, typeNameInfo, numItems, memberNames, memberTypes, memberObjectInfos);
+                res = _serWriter.WriteObject(memberNameInfo, typeNameInfo, numItems, memberNames, memberTypes, memberObjectInfos);
             }
-            else if (!ReferenceEquals(objectInfo._objectType, Converter.s_typeofString))
+            else // if (!ReferenceEquals(objectInfo._objectType, Converter.s_typeofString))
             {
-                typeNameInfo._objectId = objectInfo._objectId;
-                _serWriter.WriteObject(typeNameInfo, null, numItems, memberNames, memberTypes, memberObjectInfos);
+                throw new Exception("Impossible: memberNameInfo is never null");
+//                typeNameInfo._objectId = objectInfo._objectId;
+//                _serWriter.WriteObject(typeNameInfo, null, numItems, memberNames, memberTypes, memberObjectInfos);
             }
+
 
             Debug.Assert(memberNameInfo != null);
             if (memberNameInfo._isParentTypeOnObject)
@@ -283,6 +286,7 @@ namespace Net9.BinaryFormatter
 
             newMemberNameInfo._transmitTypeOnObject = memberNameInfo._transmitTypeOnObject;
             newMemberNameInfo._isParentTypeOnObject = memberNameInfo._isParentTypeOnObject;
+            //newMemberNameInfo._transmitTypeOnMember control everything
             WriteMembers(newMemberNameInfo, newTypeNameInfo, memberData, objectInfo, typeNameInfo, memberObjectInfo);
             PutNameInfo(newMemberNameInfo);
             PutNameInfo(newTypeNameInfo);
@@ -297,6 +301,8 @@ namespace Net9.BinaryFormatter
                                   NameInfo typeNameInfo,
                                   WriteObjectInfo? memberObjectInfo)
         {
+            //memberNameInfo._transmitTypeOnMember control everything
+
             Type? memberType = memberNameInfo._type;
             bool assignUniqueIdToValueType = false;
 
@@ -327,6 +333,7 @@ namespace Net9.BinaryFormatter
             Type? outType = null;
 
             // If member type does not equal data type, transmit type on object.
+			// Net9 specific: commenting this line seems to fix https://github.com/dotnet/runtime/issues/90387
             if (memberTypeNameInfo._primitiveTypeEnum == InternalPrimitiveTypeE.Invalid)
             {
                 outType = GetType(outObj);

@@ -13,16 +13,16 @@ namespace Net9.BinaryFormatter
 
         void ISerializationSurrogate.GetObjectData(object obj, SerializationInfo info, StreamingContext context)
         {
-            Serialize(obj, info);
+            Serialize(obj, info, context);
         }
 
         object ISerializationSurrogate.SetObjectData(object obj, SerializationInfo info, StreamingContext context)
         {
-            return Deserialize(obj, info);
+            return Deserialize(obj, info, context);
         }
 
-        public abstract void Serialize(object obj, SerializationInfo info);
-        public abstract object Deserialize(object obj, SerializationInfo info);
+        public abstract void Serialize(object obj, SerializationInfo info, StreamingContext context);
+        public abstract object Deserialize(object obj, SerializationInfo info, StreamingContext context);
     }
 
     public abstract class BinaryConverter<T> : BinaryConverter

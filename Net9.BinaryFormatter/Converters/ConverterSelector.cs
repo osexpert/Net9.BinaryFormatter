@@ -1,4 +1,5 @@
 ﻿
+using Net9.BinaryFormatter.Converters;
 using System;
 
 namespace Net9.BinaryFormatter
@@ -28,6 +29,7 @@ namespace Net9.BinaryFormatter
             var res = new List<BinaryConverter>();
             res.Add(new GenericDictionaryConverterFactory());
             res.Add(new GenericHashSetConverterFactory());
+            res.Add(new ExceptionConverter());
             return res;
         }
 

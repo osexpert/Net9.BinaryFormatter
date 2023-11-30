@@ -41,6 +41,7 @@ namespace Net9.BinaryFormatter
             res.Add(new SerializePrimitiveTypes());
             res.Add(new SerializeAllowedTypes());
             res.Add(new SerializeByAttribute());
+       //     res.Add(new SerializeExceptions());
             return res;
         }
     }
@@ -206,6 +207,13 @@ namespace Net9.BinaryFormatter
     }
 
 
+    //public class SerializeExceptions : IIsSerializable
+    //{
+    //    public bool IsSerializable(Type type)
+    //    {
+    //        return type.IsAssignableTo(typeof(Exception));
+    //    }
+    //}
 
     //public class DefaultIsNotSerialized
     //{

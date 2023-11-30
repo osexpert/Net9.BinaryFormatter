@@ -58,7 +58,7 @@ namespace Net9.BinaryFormatter
                         }
 
                         Debug.Assert(assembly != null);
-                        if (assembly.Equals(Converter.s_urtAssemblyString))// || assembly.Equals(Converter.s_urtAlternativeAssemblyString))
+                        if (assembly.Equals(Converter.s_urtAssemblyString) || assembly.Equals(Converter.s_urtAlternativeAssemblyString))
                         {
                             binaryTypeEnum = BinaryTypeEnum.ObjectUrt;
                             assemId = 0;

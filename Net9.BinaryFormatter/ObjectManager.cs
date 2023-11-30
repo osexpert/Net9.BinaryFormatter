@@ -965,6 +965,11 @@ namespace Net9.BinaryFormatter
             // Invoke OnDerserialized event if applicable
             _onDeserializedHandler?.Invoke(_context);
             _onDeserializationHandler?.Invoke(null);
+			// Net9 specific
+            foreach (var kv in _context._onDeserialization)
+            {
+                kv.Value.Item2(kv.Key, kv.Value.Item1);
+            }
         }
 
         internal virtual void AddOnDeserialization(DeserializationEventHandler handler)

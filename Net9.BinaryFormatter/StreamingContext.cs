@@ -11,6 +11,8 @@ namespace Net9.BinaryFormatter
 
         private readonly StreamingContextStates _state;
 
+        internal readonly Dictionary<object, (SerializationInfo, Action<object, SerializationInfo>)> _onDeserialization = new();
+
         public StreamingContext(StreamingContextStates state) : this(state, null)
         {
         }
@@ -32,6 +34,16 @@ namespace Net9.BinaryFormatter
         }
 
         public override int GetHashCode() => (int)_state;
+
+        //public void OnDeserialization(object obj, Action<object?> onDeserialization)
+        //{
+        //    _onDeserialization.Add(obj, onDeserialization);
+        //}
+
+        public void AddOnDeserialization(object obj, SerializationInfo info, Action<object, SerializationInfo> onDeserialization)
+        {
+            _onDeserialization.Add(obj, (info, onDeserialization));
+        }
 
         public StreamingContextStates State => _state;
 

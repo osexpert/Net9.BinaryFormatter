@@ -3,7 +3,13 @@
 
 namespace Net9.BinaryFormatter
 {
-    // BinaryHeaderEnum is the first byte on binary records (except for primitive types which do not have a header)
+
+    /// <summary>
+    /// BinaryHeaderEnum is the first byte on binary records (except for primitive types which do not have a header)
+    /// 
+    /// This enumeration identifies the type of the record. 
+    /// Each record (except for MemberPrimitiveUnTyped) starts with a record type enumeration. The size of the enumeration is one BYTE. 
+    /// </summary>
     internal enum BinaryHeaderEnum
     {
         SerializedStreamHeader = 0,
@@ -36,13 +42,13 @@ namespace Net9.BinaryFormatter
     {
         Primitive = 0,
         String = 1,
-        Object = 2,
+        Object = 2, // System.Object
         /// <summary>
         /// Urt: Uses runtime type?
         /// Urt type is an assemId of 0. No assemblyString needs to be sent
         /// </summary>
-        ObjectUrt = 3,
-        ObjectUser = 4,
+        ObjectUrt = 3, // SystemClass
+		ObjectUser = 4, // Class
         ObjectArray = 5,
         StringArray = 6,
         PrimitiveArray = 7,

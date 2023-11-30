@@ -2,6 +2,7 @@
 using Net9.BinaryFormatter;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 public class Program
@@ -58,15 +59,20 @@ public class Program
         sta.Push(45);
         sta.Push(145);
 
-       
-
-        bf.Serialize(ms, list);
+        try
+        {
+            throw new Exception("lol");
+        }
+        catch (Exception e)
+        {
+            bf.Serialize(ms, new Test());// list);
+        }
 
 
 
         ms.Position = 0;
 
-        var g = bf.Deserialize< List<Dictionary<int, string>>>(ms);
+        var g = bf.Deserialize(ms);//< List<Dictionary<int, string>>>(ms);
 
         //var sta2 = (Stack<int>)g;
         //var p1 = sta2.Pop();
@@ -79,8 +85,11 @@ public class Program
 [Net9.BinaryFormatter.Serializable]
 public class Test
 {
-    public int? nullable = null;
-    public int? nullable2 = null;
+    //public int? nullable = null;
+    //public int? nullable2 = null;
+  //  public IConvertible icon_null = null!;
+//    public object obj_4 = 4;
+    public IConvertible icon_4 = 4;
 }
 
 [Net9.BinaryFormatter.Serializable]

@@ -33,20 +33,6 @@ namespace Net9.BinaryFormatter
             return field.GetCustomAttribute<NonSerializedAttribute>() != null;
         }
 
-        public virtual bool IsISerializable(Type objectType)
-        {
-            return objectType.IsAssignableTo(s_typeofISerializable);
-        }
-
-        public virtual bool IsISerializable(object obj)
-        {
-            return obj is ISerializable;
-        }
-
-        public virtual void GetObjectData(object obj, SerializationInfo si, StreamingContext context)
-        {
-            ((ISerializable)obj).GetObjectData(si, context);
-        }
     }
 
 }
