@@ -434,7 +434,10 @@ namespace Net9.BinaryFormatter
         internal InternalSerializerTypeE _serializerTypeEnum;
     }
 
-    internal sealed class NameInfo
+    /// <summary>
+    /// TODO: maybe split into MemberTypeInfo and DataTypeInfo classes?
+    /// </summary>
+    internal sealed class TypeInfo
     {
         internal string? _fullName; // Name from SerObjectInfo.GetType
         internal long _objectId;
@@ -450,7 +453,7 @@ namespace Net9.BinaryFormatter
         internal InternalArrayTypeE _arrayEnum;
         private bool _sealedStatusChecked;
 
-        internal NameInfo() { }
+        internal TypeInfo() { }
 
         internal void Init()
         {

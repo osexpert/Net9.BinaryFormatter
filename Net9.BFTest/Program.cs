@@ -49,10 +49,11 @@ public class Program
         bf.SurrogateSelector = new ConverterSelector();
 
         bf.Control.IsSerializableHandlers = new IsSerializableHandlers();
+        bf.Control.IsSerializableHandlers.Handlers.OfType<SerializeAllowedTypes>().Single().AllowedTypes.Add(typeof(object));
 
         //bf.Control = 
-     //   bf.IsSerializable = new IsSerializableHandlers().IsSerializable;
-//        bf.Binder
+        //   bf.IsSerializable = new IsSerializableHandlers().IsSerializable;
+        //        bf.Binder
 
         var hs= new HashSet<int>() { 5 };
         var sta = new Stack<int>();
@@ -65,6 +66,9 @@ public class Program
         }
         catch (Exception e)
         {
+            TraceFlags.IConvertibleFix = true;
+            TraceFlags.IConvertibleFixArray = true;
+
             bf.Serialize(ms, new Test());// list);
         }
 
@@ -85,11 +89,22 @@ public class Program
 [Net9.BinaryFormatter.Serializable]
 public class Test
 {
-    //public int? nullable = null;
-    //public int? nullable2 = null;
-  //  public IConvertible icon_null = null!;
-//    public object obj_4 = 4;
+    public int? nullable = null;
+    public int? nullable2 = 42;
+    public int i = 55;
+    public IConvertible icon_null = null!;
+    public object obj_4 = 4;
+    public object[] objarr = new IConvertible[] { 5,5d,7M,77};
+    public object[] objarr2 = new object[] { 5, 5d, 7M, 77, 98f };
     public IConvertible icon_4 = 4;
+    public IConvertible[] iconarr = new IConvertible[] { 1, 2, 3, 4 };
+    public int[] intarr = new int[] { 1, 2, 3, 4 };
+    public TimeOnly to = new TimeOnly(42);
+    public DateOnly don = new DateOnly(1, 2, 3);
+    public IComparable comp = 4;
+    public IComparable[] comparr = new IComparable[] { 1, 2, 3, 4 };
+    
+
 }
 
 [Net9.BinaryFormatter.Serializable]
