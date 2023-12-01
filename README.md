@@ -24,6 +24,12 @@ from ISerializable -> Net9.BinaryFormatter.ISerializable
 ````
 etc.
 
+Or can use `BinaryFormatter.Control` to customize this behaviour:
+````
+BinaryFormatter.Control.IsSerializableHandlers
+BinaryFormatter.Control.IsNotSerializedHandlers
+````
+
 Now you should be able to serialize your own types, if they contain nothing at all:-) Because what about types in the runtime? Yes, this is WIP, but some types have been added and you can enable it like this:
 ```
 var bf = new BinaryFormatter();

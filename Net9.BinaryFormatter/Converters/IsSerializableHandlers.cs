@@ -1,12 +1,9 @@
-﻿using System;
-using System.Buffers.Text;
-using System.ComponentModel;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace Net9.BinaryFormatter
 {
 
-    public class IsSerializableHandlers //: IIsSerializable
+    public class IsSerializableHandlers
     {
         public List<IIsSerializable> Handlers { get; }
 
@@ -225,4 +222,14 @@ namespace Net9.BinaryFormatter
     //    }
     //}
 
+
+    public class SerializeByRuntimeAttribute : IIsSerializable
+    {
+        public bool IsSerializable(Type type)
+        {
+#pragma warning disable SYSLIB0050 // Type or member is obsolete
+            return type.IsSerializable;
+#pragma warning restore SYSLIB0050 // Type or member is obsolete
+        }
+    }
 }

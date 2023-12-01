@@ -16,7 +16,12 @@ namespace Net9.BinaryFormatter
         /// </summary>
         public IsSerializableHandlers? IsSerializableHandlers { get; set; }
 
-        internal static readonly Type s_typeofISerializable = typeof(ISerializable);
+        /// <summary>
+        /// If set, ovverides the default IsNotSerialized.
+        /// </summary>
+        public IsNotSerializedHandlers? IsNotSerializedHandlers { get; set; }
+
+        //internal static readonly Type s_typeofISerializable = typeof(ISerializable);
 
         public static readonly SerializationControl Default = new();
 
@@ -30,7 +35,10 @@ namespace Net9.BinaryFormatter
 
         public virtual bool IsNotSerialized(FieldInfo field)
         {
-            return field.GetCustomAttribute<NonSerializedAttribute>() != null;
+            if (IsNotSerializedHandlers != null)
+                return IsNotSerializedHandlers.IsNotSerialized(field);
+            else
+                return NotSerializedByAttribute.IsNotSerializedStatic(field);
         }
 
     }
