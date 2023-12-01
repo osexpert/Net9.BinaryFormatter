@@ -28,7 +28,7 @@ Now you should be able to serialize your own types, if they contain nothing at a
 ```
 var bf = new BinaryFormatter();
 bf.SurrogateSelector = new ConverterSelector(); // add default converters, currently Dictionary<,>, HashSet<>.
-bf.IsSerializable = new IsSerializableHandlers().IsSerializable; // add default IsSerializable handlers, currently primitive types, List<>, Stack<>, DateTime, KeyValuePair<,>, etc.
+bf.Control.IsSerializableHandlers = new IsSerializableHandlers(); // add default IsSerializable handlers, currently primitive types, List<>, Stack<>, DateTime, KeyValuePair<,>, etc.
 ```
 So this is very far from a drop in replacement and require a lot of manual work to switch over. So when switching, might just as well switch to `System.Text.Json`. But alternatives are good, and who knows, in some very special cases, switching to `System.Text.Json` may not be possible.
 
