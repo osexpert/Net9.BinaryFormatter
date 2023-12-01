@@ -455,6 +455,7 @@ namespace Net9.BinaryFormatter
             arrayElemInfo._transmitTypeOnMember = memberInfo._transmitTypeOnMember;
             arrayElemInfo._transmitTypeOnObject = memberInfo._transmitTypeOnObject;
             arrayElemInfo._isParentTypeOnObject = memberInfo._isParentTypeOnObject;
+            // memberInfo not used after this
 
             // Get rank and length information
             int rank = array.Rank;
@@ -493,13 +494,13 @@ namespace Net9.BinaryFormatter
 
             if (ReferenceEquals(arrayElemType, Converter.s_typeofObject) || Nullable.GetUnderlyingType(arrayElemType) != null)
             {
-                memberInfo._transmitTypeOnMember = true; // hmm...why not arrayInfo?
+                arrayInfo._transmitTypeOnMember = true;
                 arrayElemInfo._transmitTypeOnMember = true;
             }
 
             if (CheckTypeFormat(_formatterEnums._typeFormat, FormatterTypeStyle.TypesAlways))
             {
-                memberInfo._transmitTypeOnObject = true; // hmm...why not arrayInfo?
+                arrayInfo._transmitTypeOnObject = true;
                 arrayElemInfo._transmitTypeOnObject = true;
             }
 
@@ -581,7 +582,7 @@ namespace Net9.BinaryFormatter
             PutTypeInfo(arrayElemInfo);
             if (isAllocatedMemberNameInfo)
             {
-                PutTypeInfo(memberInfo);
+                PutTypeInfo(arrayInfo);
             }
         }
 
