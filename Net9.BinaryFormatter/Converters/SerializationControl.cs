@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Net9.BinaryFormatter
 {
@@ -49,18 +50,32 @@ namespace Net9.BinaryFormatter
         /// <summary>
         /// Key: (type.Assembly.FullName, type.Name)
         /// </summary>
-        Dictionary<(string?, string), Type> AllowedTypes { get; }
+        Dictionary<string, Type> AllowedTypes { get; } = new();
+        Dictionary<string, Assembly> AllowedAssemblies { get; } = new();
 
-        public AllowedTypesBinder(bool addDefaultTypes = true)
+        private bool _runtimeSpecialAccess;
+
+        public AllowedTypesBinder(bool addDefaultTypes = true, bool runtimeSpecialAccess = true)
         {
+            _runtimeSpecialAccess = runtimeSpecialAccess;
+
             if (addDefaultTypes)
             {
                 var ats = SerializeAllowedTypes.GetDefaultAllowedTypes();
-                AllowedTypes = ats.ToDictionary(t => (t.Assembly.FullName, t.FullName!));
+
+                foreach (var at in ats)
+                    AddAllowedType(at);
+                //                AllowedAssemblies = ats.Select(t => t.Assembly).Distinct().ToDictionary(a => a.GetName().Name!);
+                //              AllowedTypes = ats.ToDictionary(t => t.FullName!);
+
+                AddAllowedType(typeof(Dictionary<,>));
+
+//                AllowedAssemblies[Converter.s_urtAlternativeAssembly.GetName().Name!] = Converter.s_urtAlternativeAssembly;
             }
             else
             {
-                AllowedTypes = new();
+                //AllowedTypes = new();
+                //AllowedAssemblies = new();
             }
         }
 
@@ -70,16 +85,65 @@ namespace Net9.BinaryFormatter
             // System.Private.CoreLib, Version = 9.0.0.0, Culture = neutral, PublicKeyToken = 7cec85d7bea7798e
             // So would need to to ignore the version??
 
-            if (AllowedTypes.TryGetValue((assemblyName, typeName), out var type))
+            var assembly_qualified_name = $"{typeName}, {assemblyName}";
+
+            var t = Type.GetType(assembly_qualified_name, ResolveAsm, ResolveType);
+
+            //if (AllowedTypes.TryGetValue((assemblyName, typeName), out var type))
+            //{
+            //    return type;
+            //}
+            if (t == null) // shoul dnever get here?
+                throw new Exception($"Not allowed to load type '{assembly_qualified_name}'");
+
+            return t;
+        }
+
+        private Type? ResolveType(Assembly? assembly, string typeName, bool caseInsentitive)
+        {
+            if (caseInsentitive)
+                throw new Exception("CI not supported");
+
+            if (assembly == null)
+                throw new Exception("Assembly is null?");
+
+            if (AllowedTypes.TryGetValue(typeName, out var t))
             {
-                return type;
+                if (t.Assembly == assembly)
+                    return t;
+
+                if (_runtimeSpecialAccess)
+                {
+                    var asm_runtime = assembly == Converter.s_urtAssembly || assembly == Converter.s_urtAlternativeAssembly;
+                    var t_asm_runtime = t.Assembly == Converter.s_urtAssembly || t.Assembly == Converter.s_urtAlternativeAssembly;
+                    if (asm_runtime && t_asm_runtime)
+                        return t;
+                }
             }
-            throw new Exception($"Not allowed to load type '{assemblyName}'.'{typeName}'");
+
+            throw new Exception($"Not allowed to load assembly '{typeName}'");
+        }
+
+        private Assembly? ResolveAsm(AssemblyName name)
+        {
+            if (AllowedAssemblies.TryGetValue(name.Name!, out var asm))
+                return asm;
+
+            if (_runtimeSpecialAccess)
+            {
+                if (name.Name == Converter.s_urtAssembly.GetName().Name)
+                    return Converter.s_urtAssembly;
+                if (name.Name == Converter.s_urtAlternativeAssembly.GetName().Name)
+                    return Converter.s_urtAlternativeAssembly;
+            }
+
+            throw new Exception($"Not allowed to load assembly '{name}'");
         }
 
         public void AddAllowedType(Type t)
         {
-            AllowedTypes[(t.Assembly.FullName, t.FullName!)] = t;
+            AllowedTypes[t.FullName!] = t;
+            AllowedAssemblies[t.Assembly.GetName().Name!] = t.Assembly;
         }
     }
 

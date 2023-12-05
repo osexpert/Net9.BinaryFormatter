@@ -76,7 +76,10 @@ public class Program
             TraceFlags.IConvertibleFix = true;
             TraceFlags.IConvertibleFixArray = true;
 
-            bf.Serialize(ms, new Test());// list);
+            var nt = new Test();
+            var t = nt.dict.GetType();
+
+            bf.Serialize(ms, nt);// list);
         }
 
         //var bf_desser = new BinaryFormatter();
@@ -113,8 +116,8 @@ public class Test
     public DateOnly don = new DateOnly(1, 2, 3);
     public IComparable comp = 4;
     public IComparable[] comparr = new IComparable[] { 1, 2, 3, 4 };
-    public Dictionary<string, List<TimeSpan>> dict;
-    
+    public Dictionary<string, List<TimeSpan>> dict = new();
+    public List<Dictionary<string, List<TimeSpan>>> dicts = new();
 
 }
 
