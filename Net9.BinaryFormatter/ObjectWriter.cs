@@ -212,13 +212,12 @@ namespace Net9.BinaryFormatter
                            WriteObjectInfo?[] memberObjectInfos)
         {
             int numItems = memberNames.Length;
-            (bool b, BinaryTypeEnum[]?)? res = null;
 
             Debug.Assert(_serWriter != null);
             if (memberInfo != null)
             {
                 memberInfo._objectId = objectInfo._objectId;
-                res = _serWriter.WriteObject(memberInfo, dataInfo, numItems, memberNames, memberTypes, memberObjectInfos);
+                _serWriter.WriteObject(memberInfo, dataInfo, numItems, memberNames, memberTypes, memberObjectInfos);
             }
             else // if (!ReferenceEquals(objectInfo._objectType, Converter.s_typeofString))
             {

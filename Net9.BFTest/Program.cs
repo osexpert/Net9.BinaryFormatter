@@ -50,6 +50,13 @@ public class Program
 
         bf.Control.IsSerializableHandlers = new IsSerializableHandlers();
         bf.Control.IsSerializableHandlers.Handlers.OfType<SerializeAllowedTypes>().Single().AllowedTypes.Add(typeof(object));
+        //bf.Control.IsSerializableHandlers.Handlers.OfType<SerializeAllowedTypes>().Single().AllowedTypes.Add(typeof(IConvertible));
+        //bf.Control.IsSerializableHandlers.Handlers.OfType<SerializeAllowedTypes>().Single().AllowedTypes.Add(typeof(Test));
+        var b = new AllowedTypesBinder();
+        b.AddAllowedType(typeof(Test));
+        b.AddAllowedType(typeof(IConvertible));
+        b.AddAllowedType(typeof(IComparable));
+        bf.Binder = b;
 
         //bf.Control = 
         //   bf.IsSerializable = new IsSerializableHandlers().IsSerializable;
@@ -72,6 +79,9 @@ public class Program
             bf.Serialize(ms, new Test());// list);
         }
 
+        //var bf_desser = new BinaryFormatter();
+        //bf_desser.SurrogateSelector = new ConverterSelector();
+        //bf_desser.Control = new IsSerializableAlwaysTrue();
 
 
         ms.Position = 0;
@@ -103,6 +113,7 @@ public class Test
     public DateOnly don = new DateOnly(1, 2, 3);
     public IComparable comp = 4;
     public IComparable[] comparr = new IComparable[] { 1, 2, 3, 4 };
+    public Dictionary<string, List<TimeSpan>> dict;
     
 
 }
@@ -127,4 +138,12 @@ public readonly struct KeyValuePair2<TKey, TValue>
     public TValue Value => value;
 
   
+}
+
+class IsSerializableAlwaysTrue : SerializationControl
+{
+    public override bool IsSerializable(Type type)
+    {
+        return true;
+    }
 }

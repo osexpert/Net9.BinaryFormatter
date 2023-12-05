@@ -114,7 +114,7 @@ namespace Net9.BinaryFormatter
         /// <summary>
         /// return true if BinaryObjectWithMapTyped. If true, BinaryTypeEnum is also set
         /// </summary>
-        internal (bool, BinaryTypeEnum[]?) WriteObject(TypeInfo memberInfo, TypeInfo dataInfo, int numMembers, string[] memberNames, Type[] memberTypes, WriteObjectInfo?[] memberObjectInfos)
+        internal void WriteObject(TypeInfo memberInfo, TypeInfo dataInfo, int numMembers, string[] memberNames, Type[] memberTypes, WriteObjectInfo?[] memberObjectInfos)
         {
             InternalWriteItemNull();
             int assemId;
@@ -177,11 +177,7 @@ namespace Net9.BinaryFormatter
                 {
                     _objectMapTable.Add(objectName, new ObjectMapInfo(objectId, numMembers, memberNames, memberTypes));
                 }
-
-                return (true, binaryTypeEnumA);
             }
-
-            return (false, null);
         }
 
         internal void WriteObjectString(int objectId, string? value)
