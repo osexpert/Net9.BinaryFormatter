@@ -51,17 +51,6 @@ namespace Net9.BinaryFormatter
 
     public class SerializeByAttribute : IIsSerializable
     {
-        /*
-         * No point:
-         * Delegates are unsupported anyways
-         *    public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            throw new PlatformNotSupportedException(SR.Serialization_DelegatesNotSupported);
-        }
-         * 
-         */
-        //        public bool DelegateIsSerializable { get; set; } = false;
-
         /// <summary>
         /// Orginal implementation in net8
         /// </summary>
@@ -69,7 +58,7 @@ namespace Net9.BinaryFormatter
         /// <returns></returns>
         public bool IsSerializable(Type type)
         {
-            return IsSerializableStatic(type);//, DelegateIsSerializable);
+            return IsSerializableStatic(type);
         }
 
         /// <summary>
@@ -78,7 +67,7 @@ namespace Net9.BinaryFormatter
         /// <param name="type"></param>
         /// <param name="delegateIsSerializable"></param>
         /// <returns></returns>
-        public static bool IsSerializableStatic(Type type)//, bool delegateIsSerializable)
+        public static bool IsSerializableStatic(Type type)
         {
             // Based on Type.IsSerializable()
 
@@ -86,10 +75,9 @@ namespace Net9.BinaryFormatter
             if (type.GetCustomAttribute<SerializableAttribute>(inherit: false) != null)
                 return true;
 
-            //weird case?
             // FIXME: any reason to not use Type.IsAssignableTo? Why walk bases manually?
             Type? underlyingType = type.UnderlyingSystemType;
-            if (TypeHelper.IsRuntimeType(underlyingType))// is RuntimeType)
+            if (TypeHelper.IsRuntimeType(underlyingType))
             {
                 do
                 {
@@ -97,8 +85,16 @@ namespace Net9.BinaryFormatter
                     // System.Enum and System.MulticastDelegate. However, a generic parameter can
                     // have a base type constraint that is Delegate or even a real delegate type.
                     // Let's maintain compatibility and return true for them.
-                    // SECURITY: made the delegate logic OPTIN
-                    //if ((delegateIsSerializable && underlyingType == typeof(Delegate)) || underlyingType == typeof(Enum))
+
+                    /*
+                    * No point:
+                    * Delegates are unsupported anyways
+                    * public override void GetObjectData(SerializationInfo info, StreamingContext context)
+                    *  {
+                    *    throw new PlatformNotSupportedException(SR.Serialization_DelegatesNotSupported);
+                    *  }
+                    */
+                    // if ((delegateIsSerializable && underlyingType == typeof(Delegate)) || underlyingType == typeof(Enum))
                     if (underlyingType == typeof(Enum))
                         return true;
 
@@ -110,20 +106,6 @@ namespace Net9.BinaryFormatter
             return false;
         }
     }
-
-    //public class DefaultIsSerializable //: IIsSerializable
-    //{
-    //    //public static readonly DefaultIsSerializable Instance = new DefaultIsSerializable();
-
-    //    //public bool DelegateIsSerializable { get; set; } = false;
-
-    //    //        bool IIsSerializable.IsSerializable(Type type) => IsSerializable(type);
-
-    //    public static bool IsSerializable(Type type)
-    //    {
-    //        return SerializableByAttribute.IsSerializableStatic(type);//, delegateIsSerializable: false);
-    //    }
-    //}
 
 
     public class SerializePrimitiveTypes : IIsSerializable
@@ -187,9 +169,6 @@ namespace Net9.BinaryFormatter
 
         public bool IsSerializable(Type type)
         {
-            //if (type.IsPrimitive)
-            //    return true;
-
             if (AllowedTypes.Contains(type))
                 return true;
 
@@ -212,15 +191,7 @@ namespace Net9.BinaryFormatter
     //    }
     //}
 
-    //public class DefaultIsNotSerialized
-    //{
-    //    //public static readonly DefaultIsNotSerialized Instance = new DefaultIsNotSerialized();
 
-    //    public static bool IsNotSerialized(FieldInfo field)
-    //    {
-    //        return field.GetCustomAttribute<NonSerializedAttribute>() != null;
-    //    }
-    //}
 
 
     public class SerializeByRuntimeAttribute : IIsSerializable

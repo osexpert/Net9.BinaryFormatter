@@ -31,10 +31,11 @@ namespace Net9.BinaryFormatter
         internal static readonly Type s_typeofObject = typeof(object);
         internal static readonly Type s_typeofSystemVoid = typeof(void);
 
-        //        // In .NET Framework the default assembly is mscorlib.dll --> typeof(string).Assembly.
-        //        // In Core type string lives in System.Private.Corelib.dll which doesn't
-        //        // contain all the types which are living in mscorlib in .NET Framework. Therefore we
-        //        // use our mscorlib facade which also contains manual type forwards for deserialization.
+        // In .NET Framework the default assembly is mscorlib.dll --> typeof(string).Assembly.
+        // In Core type string lives in System.Private.Corelib.dll which doesn't
+        // contain all the types which are living in mscorlib in .NET Framework. Therefore we
+        // use our mscorlib facade which also contains manual type forwards for deserialization.
+
         //internal static readonly Assembly s_urtAssembly = Assembly.Load("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
         //internal static readonly string s_urtAssemblyString = s_urtAssembly.FullName!;
 
@@ -69,7 +70,7 @@ namespace Net9.BinaryFormatter
         internal static readonly Type s_typeofUInt32Array = typeof(uint[]);
         internal static readonly Type s_typeofUInt64Array = typeof(ulong[]);
 
-        private const int PrimitiveTypeEnumLength = 17; //Number of PrimitiveTypeEnums
+        private const int PrimitiveTypeEnumLength = 17; // Number of PrimitiveTypeEnums
 
         private static volatile Type?[]? s_typeA;
         private static volatile Type?[]? s_arrayTypeA;
