@@ -42,11 +42,11 @@ namespace Net9.BinaryFormatter
         //internal static readonly string s_urtAlternativeAssemblyString = s_urtAlternativeAssembly.FullName!;
 
         // I don't care about .NET Framework ....
-        internal static readonly Assembly s_urtAssembly = s_typeofString.Assembly;
-        internal static readonly string s_urtAssemblyString = s_urtAssembly.FullName!;
+        internal static readonly Assembly s_urt_CoreLib_Assembly = s_typeofString.Assembly;
+        internal static readonly string s_urt_CoreLib_AssemblyString = s_urt_CoreLib_Assembly.FullName!;
 
-        internal static readonly Assembly s_urtAlternativeAssembly = Assembly.Load("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
-        internal static readonly string s_urtAlternativeAssemblyString = s_urtAlternativeAssembly.FullName!;
+        internal static readonly Assembly s_urt_mscorlib_Assembly = Assembly.Load("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
+        internal static readonly string s_urt_mscorlib_AssemblyString = s_urt_mscorlib_Assembly.FullName!;
 
 
         // Arrays

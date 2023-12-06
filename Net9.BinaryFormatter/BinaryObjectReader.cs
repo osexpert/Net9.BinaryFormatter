@@ -38,7 +38,7 @@ namespace Net9.BinaryFormatter
         // Cross AppDomain
         internal object[]? _crossAppDomainArray; //Set by the BinaryFormatter
 
-        //MethodCall and MethodReturn are handled special for perf reasons
+        // MethodCall and MethodReturn are handled special for perf reasons
         private bool _fullDeserialization;
 
         private SerStack ValueFixupStack => _valueFixupStack ??= new SerStack("ValueType Fixup Stack");
@@ -89,49 +89,47 @@ namespace Net9.BinaryFormatter
 
             _isSimpleAssembly = (_formatterEnums._assemblyFormat == FormatterAssemblyStyle.Simple);
 
-            //using (DeserializationToken token = SerializationInfo.StartDeserialization())
+            if (_fullDeserialization)
             {
-                if (_fullDeserialization)
-                {
-                    // Reinitialize
-                    _objectManager = new ObjectManager(_surrogates, _context);
-                    _serObjectInfoInit = new SerObjectInfoInit();
-                }
-
-                // Will call back to ParseObject, ParseHeader for each object found
-                serParser.Run();
-
-                if (_fullDeserialization)
-                {
-                    _objectManager!.DoFixups();
-                }
-
-                if (TopObject == null)
-                {
-                    throw new SerializationException(SR.Serialization_TopObject);
-                }
-
-                //if TopObject has a surrogate then the actual object may be changed during special fixup
-                //So refresh it using topID.
-                if (HasSurrogate(TopObject.GetType()) && _topId != 0)//Not yet resolved
-                {
-                    Debug.Assert(_objectManager != null);
-                    TopObject = _objectManager.GetObject(_topId);
-                }
-
-                if (TopObject is IObjectReference)
-                {
-                    TopObject = ((IObjectReference)TopObject).GetRealObject(_context);
-                }
-
-                if (_fullDeserialization)
-                {
-                    _objectManager!.RaiseDeserializationEvent(); // This will raise both IDeserialization and [OnDeserialized] events
-                }
-
-                return TopObject!;
+                // Reinitialize
+                _objectManager = new ObjectManager(_surrogates, _context);
+                _serObjectInfoInit = new SerObjectInfoInit();
             }
+
+            // Will call back to ParseObject, ParseHeader for each object found
+            serParser.Run();
+
+            if (_fullDeserialization)
+            {
+                _objectManager!.DoFixups();
+            }
+
+            if (TopObject == null)
+            {
+                throw new SerializationException(SR.Serialization_TopObject);
+            }
+
+            // if TopObject has a surrogate then the actual object may be changed during special fixup
+            // So refresh it using topID.
+            if (HasSurrogate(TopObject.GetType()) && _topId != 0) // Not yet resolved
+            {
+                Debug.Assert(_objectManager != null);
+                TopObject = _objectManager.GetObject(_topId);
+            }
+
+            if (TopObject is IObjectReference)
+            {
+                TopObject = ((IObjectReference)TopObject).GetRealObject(_context);
+            }
+
+            if (_fullDeserialization)
+            {
+                _objectManager!.RaiseDeserializationEvent(); // This will raise both IDeserialization and [OnDeserialized] events
+            }
+
+            return TopObject!;
         }
+
         private bool HasSurrogate(Type t)
         {
             return _surrogates != null && _surrogates.GetSurrogate(t, _context) != null;
@@ -597,7 +595,7 @@ namespace Net9.BinaryFormatter
             }
             else if (pr._memberValueEnum == InternalMemberValueE.Nested)
             {
-                //Set up dtType for ParseObject
+                // Set up dtType for ParseObject
                 if (pr._dtType == null)
                 {
                     pr._dtType = objectPr._arrayElementType;
@@ -611,8 +609,8 @@ namespace Net9.BinaryFormatter
                     Debug.Assert(objectPr._newObj != null);
                     if ((objectPr._arrayElementType.IsValueType) && (pr._arrayElementTypeCode == InternalPrimitiveTypeE.Invalid))
                     {
-                        pr._isValueTypeFixup = true; //Valuefixup
-                        ValueFixupStack.Push(new ValueFixup((Array)objectPr._newObj, objectPr._indexMap)); //valuefixup
+                        pr._isValueTypeFixup = true; // Valuefixup
+                        ValueFixupStack.Push(new ValueFixup((Array)objectPr._newObj, objectPr._indexMap)); // valuefixup
                     }
                     else
                     {
@@ -737,7 +735,7 @@ namespace Net9.BinaryFormatter
             }
 
             Debug.Assert(objectPr != null && objectPr._objectInfo != null && pr._name != null);
-            //if ((pr.PRdtType == null) && !objectPr.PRobjectInfo.isSi)
+            // if ((pr.PRdtType == null) && !objectPr.PRobjectInfo.isSi)
             if (pr._dtType == null && objectPr._objectInfo._isTyped)
             {
                 pr._dtType = objectPr._objectInfo.GetType(pr._name);
@@ -760,8 +758,8 @@ namespace Net9.BinaryFormatter
 
                 if ((pr._objectInfo != null) && pr._objectInfo._objectType != null && (pr._objectInfo._objectType.IsValueType))
                 {
-                    pr._isValueTypeFixup = true; //Valuefixup
-                    ValueFixupStack.Push(new ValueFixup(objectPr._newObj, pr._name, objectPr._objectInfo)); //valuefixup
+                    pr._isValueTypeFixup = true; // Valuefixup
+                    ValueFixupStack.Push(new ValueFixup(objectPr._newObj, pr._name, objectPr._objectInfo)); // valuefixup
                 }
                 else
                 {
@@ -864,7 +862,7 @@ namespace Net9.BinaryFormatter
             if ((!pr._isRegistered) && (pr._objectId > 0))
             {
                 // String is treated as an object if it has an id
-                //m_objectManager.RegisterObject(pr.PRvalue, pr.PRobjectId);
+                // m_objectManager.RegisterObject(pr.PRvalue, pr.PRobjectId);
                 RegisterObject(pr._value, pr, parentPr, true);
             }
         }
@@ -1095,8 +1093,6 @@ namespace Net9.BinaryFormatter
             }
             else
             {
-                // Bind(er) = custom type resolver?
-                // problem: null can not block? But it can throw so...
                 objectType = Bind(assemblyInfo._assemblyString, name);
                 if (objectType == null)
                 {

@@ -8,7 +8,6 @@ using System.ComponentModel;
 namespace Net9.BinaryFormatter
 {
     [Serializable]
-//    [TypeForwardedFrom("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")] // HMMM??
     public class SerializationException : SystemException
     {
         /// <summary>
@@ -32,32 +31,6 @@ namespace Net9.BinaryFormatter
         {
             HResult = HResults.COR_E_SERIALIZATION;
         }
-
-        //        [EditorBrowsable(EditorBrowsableState.Never)]
-        //#pragma warning disable SYSLIB0051 // Type or member is obsolete
-        //        protected SerializationException(SerializationInfo info, StreamingContext context) : base(GetBaseInfo(info), GetBaseContext(context))
-        //#pragma warning restore SYSLIB0051 // Type or member is obsolete
-        //        {
-
-        //        }
-
-        //        private static System.Runtime.Serialization.StreamingContext GetBaseContext(StreamingContext context)
-        //        {
-        //            //System.Runtime.Serialization.StreamingContextStates.CrossAppDomain
-        //#pragma warning disable SYSLIB0050 // Type or member is obsolete
-        //            return new System.Runtime.Serialization.StreamingContext((System.Runtime.Serialization.StreamingContextStates)context.State, context.Context);
-        //#pragma warning restore SYSLIB0050 // Type or member is obsolete
-        //        }
-
-        //        private static System.Runtime.Serialization.SerializationInfo GetBaseInfo(SerializationInfo info)
-        //        {
-        //            var res = new System.Runtime.Serialization.SerializationInfo(info.ObjectType, info..);
-        //        }
-
-
-
-
-
     }
 
     internal class HResults

@@ -25,20 +25,8 @@ namespace Net9.BinaryFormatter
         {
             var genArgs = type.GetGenericArguments();
             var genType = typeof(GenericDictionaryConverter<,>).MakeGenericType(genArgs);
-            var res = (BinaryConverter)Activator.CreateInstance(genType)!;
-            //if (res is IDeserializationCallback dc)
-            //{
-            //    OnDeserializationEvent += dc.OnDeserialization;
-            //}
-            return res;
+            return (BinaryConverter)Activator.CreateInstance(genType)!;
         }
-
-        //public event Action<object?>? OnDeserializationEvent;
-
-        //public void OnDeserialization(object? sender)
-        //{
-        //    OnDeserializationEvent?.Invoke(sender);
-        //}
     }
 
     public class GenericDictionaryConverter<K, V> : BinaryConverter<Dictionary<K, V>>

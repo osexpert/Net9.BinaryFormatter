@@ -73,8 +73,8 @@ public class Program
         }
         catch (Exception e)
         {
-            TraceFlags.IConvertibleFix = true;
-            TraceFlags.IConvertibleFixArray = true;
+            TraceFlags.Formatter_IConvertibleFix = true;
+            TraceFlags.Formatter_IConvertibleArrayFix = true;
 
             var nt = new Test();
             var t = nt.dict.GetType();

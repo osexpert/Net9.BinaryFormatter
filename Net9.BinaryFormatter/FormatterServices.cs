@@ -312,17 +312,20 @@ namespace Net9.BinaryFormatter
         {
             ArgumentNullException.ThrowIfNull(type);
 
-            // Special case types like arrays
-            Type attributedType = type;
-            while (attributedType.HasElementType)
+            if (TraceFlags.Formatter_CheckTypeForwardedFromAttributeDuringAssemblyNameLookup)
             {
-                attributedType = attributedType.GetElementType()!;
-            }
+                // Special case types like arrays
+                Type attributedType = type;
+                while (attributedType.HasElementType)
+                {
+                    attributedType = attributedType.GetElementType()!;
+                }
 
-            foreach (Attribute first in attributedType.GetCustomAttributes(typeof(TypeForwardedFromAttribute), false))
-            {
-                hasTypeForwardedFrom = true;
-                return ((TypeForwardedFromAttribute)first).AssemblyFullName;
+                foreach (Attribute first in attributedType.GetCustomAttributes(typeof(TypeForwardedFromAttribute), false))
+                {
+                    hasTypeForwardedFrom = true;
+                    return ((TypeForwardedFromAttribute)first).AssemblyFullName;
+                }
             }
 
             hasTypeForwardedFrom = false;

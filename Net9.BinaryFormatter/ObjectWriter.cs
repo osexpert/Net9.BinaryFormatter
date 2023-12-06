@@ -196,6 +196,7 @@ namespace Net9.BinaryFormatter
                             }
                         }
                     }
+
                     Write(objectInfo, memberInfo, dataInfo, memberNames, memberTypes, memberData, memberObjectInfos);
                 }
             }
@@ -214,20 +215,11 @@ namespace Net9.BinaryFormatter
             int numItems = memberNames.Length;
 
             Debug.Assert(_serWriter != null);
-            if (memberInfo != null)
-            {
-                memberInfo._objectId = objectInfo._objectId;
-                _serWriter.WriteObject(memberInfo, dataInfo, numItems, memberNames, memberTypes, memberObjectInfos);
-            }
-            else // if (!ReferenceEquals(objectInfo._objectType, Converter.s_typeofString))
-            {
-                throw new Exception("Impossible: memberNameInfo is never null");
-//                typeNameInfo._objectId = objectInfo._objectId;
-//                _serWriter.WriteObject(typeNameInfo, null, numItems, memberNames, memberTypes, memberObjectInfos);
-            }
-
-
             Debug.Assert(memberInfo != null);
+
+            memberInfo._objectId = objectInfo._objectId;
+            _serWriter.WriteObject(memberInfo, dataInfo, numItems, memberNames, memberTypes, memberObjectInfos);
+
             if (memberInfo._isParentTypeOnObject)
             {
                 memberInfo._transmitTypeOnObject = true;
@@ -245,15 +237,8 @@ namespace Net9.BinaryFormatter
                 WriteMemberSetup(objectInfo, memberInfo, memberNames[i], memberTypes[i], memberData[i], memberObjectInfos[i]);
             }
 
-            if (memberInfo != null)
-            {
-                memberInfo._objectId = objectInfo._objectId;
-                _serWriter.WriteObjectEnd();
-            }
-            else if (!ReferenceEquals(objectInfo._objectType, Converter.s_typeofString))
-            {
-                _serWriter.WriteObjectEnd();
-            }
+            memberInfo._objectId = objectInfo._objectId;
+            _serWriter.WriteObjectEnd();
         }
 
         [RequiresUnreferencedCode(ObjectWriterUnreferencedCodeMessage)]
@@ -285,7 +270,7 @@ namespace Net9.BinaryFormatter
 
             newMemberNameInfo._transmitTypeOnObject = memberInfo._transmitTypeOnObject;
             newMemberNameInfo._isParentTypeOnObject = memberInfo._isParentTypeOnObject;
-            //newMemberNameInfo._transmitTypeOnMember control everything
+
             WriteMembers(newMemberNameInfo, newDataInfo, memberData, objectInfo, memberObjectInfo);
             PutTypeInfo(newMemberNameInfo);
             PutTypeInfo(newDataInfo);
@@ -299,17 +284,13 @@ namespace Net9.BinaryFormatter
                                   WriteObjectInfo objectInfo,
                                   WriteObjectInfo? memberObjectInfo)
         {
-            //memberNameInfo._transmitTypeOnMember control everything
-
             Type? memberType = memberInfo._type;
             bool assignUniqueIdToValueType = false;
 
             // Types are transmitted for a member as follows:
             // The member is of type object
-            // The member object of type is ISerializable and
-            //  Binary - Types always transmitted.
+            // The member object of type is ISerializable and Binary - Types always transmitted.
 
-            // FIXME: why check if type object? why not check for all types that are nullable?
             if (ReferenceEquals(memberType, Converter.s_typeofObject) || Nullable.GetUnderlyingType(memberType!) != null)
             {
                 dataInfo._transmitTypeOnMember = true;
@@ -336,7 +317,7 @@ namespace Net9.BinaryFormatter
             // I think it make more sense to check that member is NonPrimitive than to check the object.
             // If member is primitive, the check can be skipped, nothing else can be assigned to it that the primitive itself
             // In any case, this is probably an optimization.
-            if ((TraceFlags.IConvertibleFix ? memberInfo : dataInfo)._primitiveTypeEnum == InternalPrimitiveTypeE.Invalid)
+            if ((TraceFlags.Formatter_IConvertibleFix ? memberInfo : dataInfo)._primitiveTypeEnum == InternalPrimitiveTypeE.Invalid)
             {
                 outType = GetType(outObj);
                 if (!ReferenceEquals(memberType, outType))
@@ -384,7 +365,6 @@ namespace Net9.BinaryFormatter
                 return;
             }
 
-            // memberInfo._transmitTypeOnMember control everything
             if (!WriteKnownValueClass(memberInfo, dataInfo, memberData!))
             {
                 outType ??= GetType(outObj);
@@ -415,12 +395,6 @@ namespace Net9.BinaryFormatter
         private void WriteArray(WriteObjectInfo objectInfo, TypeInfo memberInfo)
         {
             bool isAllocatedMemberNameInfo = false;
-            if (memberInfo == null)
-            {
-                throw new Exception("impossible");
-                memberInfo = TypeToTypeInfo(objectInfo);
-                isAllocatedMemberNameInfo = true;
-            }
 
             memberInfo._isArray = true;
 
@@ -624,10 +598,10 @@ namespace Net9.BinaryFormatter
                 actualTypeInfo._objectId = arrayElemInfo._objectId;
                 actualTypeInfo._assemId = arrayElemInfo._assemId;
                 actualTypeInfo._isArrayItem = true;
-                if (TraceFlags.IConvertibleFixArray)
+                if (TraceFlags.Formatter_IConvertibleArrayFix)
                 {
                     // all other places always set _transmitTypeOnMember for both member and object, and this seems to fix it
-                    arrayElemInfo._transmitTypeOnMember = true; // Net9 hack
+                    arrayElemInfo._transmitTypeOnMember = true;
                 }
             }
             else
@@ -993,7 +967,7 @@ namespace Net9.BinaryFormatter
             {
                 assemId = 0;
             }
-            else if (assemblyString.Equals(Converter.s_urtAssemblyString) || assemblyString.Equals(Converter.s_urtAlternativeAssemblyString))
+            else if (assemblyString.Equals(Converter.s_urt_CoreLib_AssemblyString) || assemblyString.Equals(Converter.s_urt_mscorlib_AssemblyString))
             {
                 // Urt type is an assemId of 0. No assemblyString needs to be sent
                 // FIXME: this seems wrong....does not work with TimeOnly...OR maybe we are using the wrong Urt-assembly in the destination...

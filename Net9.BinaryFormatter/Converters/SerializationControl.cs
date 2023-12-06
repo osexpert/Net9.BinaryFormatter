@@ -43,6 +43,10 @@ namespace Net9.BinaryFormatter
                 return NotSerializedByAttribute.IsNotSerializedStatic(field);
         }
 
+        public virtual bool IsOptional(MemberInfo memberInfo)
+        {
+            return memberInfo.GetCustomAttribute(typeof(OptionalFieldAttribute), inherit: false) != null;
+        }
     }
 
     public class AllowedTypesBinder : SerializationBinder
@@ -53,18 +57,20 @@ namespace Net9.BinaryFormatter
         Dictionary<string, Type> AllowedTypes { get; } = new();
         Dictionary<string, Assembly> AllowedAssemblies { get; } = new();
 
-        private bool _runtimeSpecialAccess;
+//        private bool _runtimeSpecialAccess;
 
-        public AllowedTypesBinder(bool addDefaultTypes = true, bool runtimeSpecialAccess = true)
+        public AllowedTypesBinder(bool addDefaultTypes = true)//, bool runtimeSpecialAccess = true)
         {
-            _runtimeSpecialAccess = runtimeSpecialAccess;
+//            _runtimeSpecialAccess = runtimeSpecialAccess;
 
             if (addDefaultTypes)
             {
                 var ats = SerializeAllowedTypes.GetDefaultAllowedTypes();
 
                 foreach (var at in ats)
+                {
                     AddAllowedType(at);
+                }
                 //                AllowedAssemblies = ats.Select(t => t.Assembly).Distinct().ToDictionary(a => a.GetName().Name!);
                 //              AllowedTypes = ats.ToDictionary(t => t.FullName!);
 
@@ -112,13 +118,13 @@ namespace Net9.BinaryFormatter
                 if (t.Assembly == assembly)
                     return t;
 
-                if (_runtimeSpecialAccess)
-                {
-                    var asm_runtime = assembly == Converter.s_urtAssembly || assembly == Converter.s_urtAlternativeAssembly;
-                    var t_asm_runtime = t.Assembly == Converter.s_urtAssembly || t.Assembly == Converter.s_urtAlternativeAssembly;
-                    if (asm_runtime && t_asm_runtime)
-                        return t;
-                }
+                //if (_runtimeSpecialAccess)
+                //{
+                //    var asm_runtime = assembly == Converter.s_urt_CoreLib_Assembly || assembly == Converter.s_urt_mscorlib_Assembly;
+                //    var t_asm_runtime = t.Assembly == Converter.s_urt_CoreLib_Assembly || t.Assembly == Converter.s_urt_mscorlib_Assembly;
+                //    if (asm_runtime && t_asm_runtime)
+                //        return t;
+                //}
             }
 
             throw new Exception($"Not allowed to load assembly '{typeName}'");
@@ -129,13 +135,13 @@ namespace Net9.BinaryFormatter
             if (AllowedAssemblies.TryGetValue(name.Name!, out var asm))
                 return asm;
 
-            if (_runtimeSpecialAccess)
-            {
-                if (name.Name == Converter.s_urtAssembly.GetName().Name)
-                    return Converter.s_urtAssembly;
-                if (name.Name == Converter.s_urtAlternativeAssembly.GetName().Name)
-                    return Converter.s_urtAlternativeAssembly;
-            }
+            //if (_runtimeSpecialAccess)
+            //{
+            //    if (name.Name == Converter.s_urt_CoreLib_Assembly.GetName().Name)
+            //        return Converter.s_urt_CoreLib_Assembly;
+            //    if (name.Name == Converter.s_urt_mscorlib_Assembly.GetName().Name)
+            //        return Converter.s_urt_mscorlib_Assembly;
+            //}
 
             throw new Exception($"Not allowed to load assembly '{name}'");
         }

@@ -58,7 +58,7 @@ namespace Net9.BinaryFormatter
                         }
 
                         Debug.Assert(assembly != null);
-                        if (assembly.Equals(Converter.s_urtAssemblyString) || assembly.Equals(Converter.s_urtAlternativeAssemblyString))
+                        if (assembly.Equals(Converter.s_urt_CoreLib_AssemblyString) || assembly.Equals(Converter.s_urt_mscorlib_AssemblyString))
                         {
                             binaryTypeEnum = BinaryTypeEnum.ObjectUrt;
                             assemId = 0;
@@ -116,7 +116,7 @@ namespace Net9.BinaryFormatter
                 switch (primitiveTypeEnum)
                 {
                     case InternalPrimitiveTypeE.Invalid:
-                        binaryTypeEnum = type.Assembly == Converter.s_urtAssembly ?
+                        binaryTypeEnum = type.Assembly == Converter.s_urt_CoreLib_Assembly ?
                             BinaryTypeEnum.ObjectUrt :
                             BinaryTypeEnum.ObjectUser;
                         typeInformation = type.FullName;

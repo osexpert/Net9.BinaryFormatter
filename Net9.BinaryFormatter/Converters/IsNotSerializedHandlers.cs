@@ -52,7 +52,7 @@ namespace Net9.BinaryFormatter
 
         public static bool IsNotSerializedStatic(FieldInfo field)
         {
-            return field.GetCustomAttribute<NonSerializedAttribute>() != null;
+            return field.GetCustomAttribute<NonSerializedAttribute>(inherit: false) != null;
         }
     }
 

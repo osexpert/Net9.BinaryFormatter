@@ -23,7 +23,7 @@ namespace Net9.BinaryFormatter
 
         internal ObjectHolder[] _objects;
         internal object? _topObject;
-        internal ObjectHolderList? _specialFixupObjects; //This is IObjectReference, ISerializable, or has a Surrogate.
+        internal ObjectHolderList? _specialFixupObjects; // This is IObjectReference, ISerializable, or has a Surrogate.
         internal long _fixupCount;
         internal readonly ISurrogateSelector? _selector;
         internal readonly StreamingContext _context;
@@ -48,7 +48,7 @@ namespace Net9.BinaryFormatter
 
         internal ObjectHolder? FindObjectHolder(long objectID)
         {
-            // The  index of the bin in which we live is rightmost n bits of the objectID.
+            // The index of the bin in which we live is rightmost n bits of the objectID.
             int index = (int)(objectID & ArrayMask);
             if (index >= _objects.Length)
             {
@@ -88,10 +88,10 @@ namespace Net9.BinaryFormatter
             Debug.Assert(holder != null, "holder!=null");
             Debug.Assert(holder._id >= 0, "holder.m_id>=0");
 
-            //If the id that we need to place is greater than our current length, and less
-            //than the maximum allowable size of the array.  We need to double the size
-            //of the array.  If the array has already reached it's maximum allowable size,
-            //we chain elements off of the buckets.
+            // If the id that we need to place is greater than our current length, and less
+            // than the maximum allowable size of the array.  We need to double the size
+            // of the array.  If the array has already reached it's maximum allowable size,
+            // we chain elements off of the buckets.
             if (holder._id >= _objects.Length && _objects.Length != MaxArraySize)
             {
                 int newSize = MaxArraySize;
@@ -100,9 +100,9 @@ namespace Net9.BinaryFormatter
                 {
                     newSize = (_objects.Length * 2);
 
-                    //Keep doubling until we're larger than our target size.
-                    //We could also do this with log operations, but that would
-                    //be slower than the brute force approach.
+                    // Keep doubling until we're larger than our target size.
+                    // We could also do this with log operations, but that would
+                    // be slower than the brute force approach.
                     while (newSize <= holder._id && newSize < MaxArraySize)
                     {
                         newSize *= 2;
@@ -119,7 +119,7 @@ namespace Net9.BinaryFormatter
                 _objects = temp;
             }
 
-            //Find the bin in which we live and make this new element the first element in the bin.
+            // Find the bin in which we live and make this new element the first element in the bin.
             int index = (int)(holder._id & ArrayMask);
 
             ObjectHolder tempHolder = _objects[index];
@@ -129,10 +129,10 @@ namespace Net9.BinaryFormatter
 
         private bool GetCompletionInfo(FixupHolder fixup, [NotNullWhen(true)] out ObjectHolder? holder, out object member, bool bThrowIfMissing)
         {
-            //Set the member id (String or MemberInfo) for the member being fixed up.
+            // Set the member id (String or MemberInfo) for the member being fixed up.
             member = fixup._fixupInfo;
 
-            //Find the object required for the fixup.  Throw if we can't find it.
+            // Find the object required for the fixup.  Throw if we can't find it.
             holder = FindObjectHolder(fixup._id);
 
             if (holder == null || holder.CanObjectValueChange || holder.ObjectValue == null)
@@ -190,11 +190,11 @@ namespace Net9.BinaryFormatter
             }
             else
             {
-                //Set the object data
+                // Set the object data
                 Debug.Assert(holder.ObjectValue is ISerializable, "holder.m_object is ISerializable");
                 CompleteISerializableObject(holder.ObjectValue, holder.SerializationInfo, _context);
             }
-            //Clear anything that we know that we're not going to need.
+            // Clear anything that we know that we're not going to need.
             holder.SerializationInfo = null;
             holder.RequiresSerInfoFixup = false;
 
@@ -220,18 +220,18 @@ namespace Net9.BinaryFormatter
             object? tempObject;
             Debug.Assert(holder.IsIncompleteObjectReference, "holder.IsIncompleteObjectReference");
 
-            //In the pathological case, an Object implementing IObjectReference could return a reference
-            //to a different object which implements IObjectReference.  This makes us vulnerable to a
-            //denial of service attack and stack overflow.  If the depthCount becomes greater than
-            //MaxReferenceDepth, we'll throw a SerializationException.
+            // In the pathological case, an Object implementing IObjectReference could return a reference
+            // to a different object which implements IObjectReference.  This makes us vulnerable to a
+            // denial of service attack and stack overflow.  If the depthCount becomes greater than
+            // MaxReferenceDepth, we'll throw a SerializationException.
             int depthCount = 0;
 
-            //We wrap this in a try/catch block to handle the case where we're trying to resolve a chained
-            //list of object reference (e.g. an IObjectReference can't resolve itself without some information
-            //that's currently missing from the graph).  We'll catch the NullReferenceException and come back
-            //and try again later.  The downside of this scheme is that if the object actually needed to throw
-            //a NullReferenceException, it's being caught and turned into a SerializationException with a
-            //fairly cryptic message.
+            // We wrap this in a try/catch block to handle the case where we're trying to resolve a chained
+            // list of object reference (e.g. an IObjectReference can't resolve itself without some information
+            // that's currently missing from the graph).  We'll catch the NullReferenceException and come back
+            // and try again later.  The downside of this scheme is that if the object actually needed to throw
+            // a NullReferenceException, it's being caught and turned into a SerializationException with a
+            // fairly cryptic message.
             try
             {
                 do
@@ -239,9 +239,9 @@ namespace Net9.BinaryFormatter
                     tempObject = holder.ObjectValue;
                     Debug.Assert(holder.ObjectValue != null);
                     holder.SetObjectValue(((IObjectReference)(holder.ObjectValue)).GetRealObject(_context), this);
-                    //The object didn't yet have enough information to resolve the reference, so we'll
-                    //return false and the graph walker should call us back again after more objects have
-                    //been resolved.
+                    // The object didn't yet have enough information to resolve the reference, so we'll
+                    // return false and the graph walker should call us back again after more objects have
+                    // been resolved.
                     if (holder.ObjectValue == null)
                     {
                         holder.SetObjectValue(tempObject, this);
@@ -281,13 +281,13 @@ namespace Net9.BinaryFormatter
             Debug.Assert(holder != null, "[TypedReferenceBuilder.ctor]holder!=null");
             Debug.Assert(holder.RequiresValueTypeFixup, "[TypedReferenceBuilder.ctor]holder.RequiresValueTypeFixup");
 
-            //In order to get a TypedReference, we need to get a list of all of the FieldInfos to
-            //create the path from our outermost containing object down to the actual field which
-            //we'd like to set.  This loop is used to build up that list.
+            // In order to get a TypedReference, we need to get a list of all of the FieldInfos to
+            // create the path from our outermost containing object down to the actual field which
+            // we'd like to set.  This loop is used to build up that list.
             while (holder.RequiresValueTypeFixup)
             {
-                //Enlarge the array if required (this is actually fairly unlikely as it would require that we
-                //be nested more than 4 deep.
+                // Enlarge the array if required (this is actually fairly unlikely as it would require that we
+                // be nested more than 4 deep.
                 if ((currentFieldIndex + 1) >= fieldsTemp.Length)
                 {
                     var temp = new FieldInfo[fieldsTemp.Length * 2];
@@ -295,11 +295,11 @@ namespace Net9.BinaryFormatter
                     fieldsTemp = temp;
                 }
 
-                //Get the fixup information.  If we have data for our parent field, add it to our list
-                //and continue the walk up to find the next outermost containing object.  We cache the
-                //object that we have.  In most cases, we could have just grabbed it after this loop finished.
-                //However, if the outermost containing object is an array, we need the object one further
-                //down the chain, so we have to do a lot of caching.
+                // Get the fixup information.  If we have data for our parent field, add it to our list
+                // and continue the walk up to find the next outermost containing object.  We cache the
+                // object that we have.  In most cases, we could have just grabbed it after this loop finished.
+                // However, if the outermost containing object is an array, we need the object one further
+                // down the chain, so we have to do a lot of caching.
                 currFixup = holder.ValueFixup!;
                 fixupObj = holder.ObjectValue;  //Save the most derived
                 if (currFixup.ParentField != null)
@@ -326,17 +326,17 @@ namespace Net9.BinaryFormatter
                 }
                 else
                 {
-                    //If we find an index into an array, save that information.
+                    // If we find an index into an array, save that information.
                     Debug.Assert(currFixup.ParentIndex != null, "[ObjectManager.DoValueTypeFixup]currFixup.ParentIndex!=null");
-                    holder = FindObjectHolder(currFixup.ContainerID)!; //find the array to fix.
+                    holder = FindObjectHolder(currFixup.ContainerID)!; // find the array to fix.
                     arrayIndex = currFixup.ParentIndex;
                     break;
                 }
             }
 
-            //If the outermost container isn't an array, we need to grab it.  Otherwise, we just need to hang onto
-            //the boxed object that we already grabbed.  We'll assign the boxed object back into the array as the
-            //last step.
+            // If the outermost container isn't an array, we need to grab it.  Otherwise, we just need to hang onto
+            // the boxed object that we already grabbed.  We'll assign the boxed object back into the array as the
+            // last step.
             if (!(holder.ObjectValue is Array) && holder.ObjectValue != null)
             {
                 fixupObj = holder.ObjectValue;
@@ -345,9 +345,9 @@ namespace Net9.BinaryFormatter
 
             if (currentFieldIndex != 0)
             {
-                //MakeTypedReference requires an array of exactly the correct size that goes from the outermost object
-                //in to the innermost field.  We currently have an array of arbitrary size that goes from the innermost
-                //object outwards.  We create an array of the right size and do the copy.
+                // MakeTypedReference requires an array of exactly the correct size that goes from the outermost object
+                // in to the innermost field.  We currently have an array of arbitrary size that goes from the innermost
+                // object outwards.  We create an array of the right size and do the copy.
                 fields = new FieldInfo[currentFieldIndex];
                 for (int i = 0; i < currentFieldIndex; i++)
                 {
@@ -357,7 +357,7 @@ namespace Net9.BinaryFormatter
                 }
 
                 Debug.Assert(fixupObj != null, "[ObjectManager.DoValueTypeFixup]fixupObj!=null");
-                //Make the TypedReference and use it to set the value.
+                // Make the TypedReference and use it to set the value.
                 TypedReference typedRef = TypedReference.MakeTypedReference(fixupObj, fields);
                 if (memberToFix != null)
                 {
@@ -373,8 +373,8 @@ namespace Net9.BinaryFormatter
                 FormatterServices.SerializationSetValue(memberToFix, fixupObj, value);
             }
 
-            //If we have an array index, it means that our outermost container was an array.  We don't have
-            //any way to build a TypedReference into an array, so we'll use the array functions to set the value.
+            // If we have an array index, it means that our outermost container was an array.  We don't have
+            // any way to build a TypedReference into an array, so we'll use the array functions to set the value.
             if (arrayIndex != null && holder.ObjectValue != null)
             {
                 ((Array)(holder.ObjectValue)).SetValue(fixupObj, arrayIndex);
@@ -412,8 +412,8 @@ namespace Net9.BinaryFormatter
             {
                 return;
             }
-            //If either one of these conditions is true, we need to update the data in the
-            //SerializationInfo before calling SetObjectData.
+            // If either one of these conditions is true, we need to update the data in the
+            // SerializationInfo before calling SetObjectData.
             if (holder.HasSurrogate || holder.HasISerializable)
             {
                 si = holder._serInfo;
@@ -422,7 +422,7 @@ namespace Net9.BinaryFormatter
                     throw new SerializationException(SR.Serialization_InvalidFixupDiscovered);
                 }
 
-                //Walk each of the fixups and complete the name-value pair in the SerializationInfo.
+                // Walk each of the fixups and complete the name-value pair in the SerializationInfo.
                 if (fixups != null)
                 {
                     for (int i = 0; i < fixups._count; i++)
@@ -434,12 +434,12 @@ namespace Net9.BinaryFormatter
                         Debug.Assert(fixups._values[i]!._fixupType == FixupHolder.DelayedFixup, "fixups.m_values[i].m_fixupType==FixupHolder.DelayedFixup");
                         if (GetCompletionInfo(fixups._values[i]!, out tempObjectHolder, out fixupInfo, bObjectFullyComplete))
                         {
-                            //Walk the SerializationInfo and find the member needing completion.  All we have to do
-                            //at this point is set the member into the Object
+                            // Walk the SerializationInfo and find the member needing completion.  All we have to do
+                            // at this point is set the member into the Object
                             object? holderValue = tempObjectHolder.ObjectValue;
                             Debug.Assert(holderValue != null);
                             si.UpdateValue((string)fixupInfo, holderValue, holderValue.GetType());
-                            //Decrement our total number of fixups left to do.
+                            // Decrement our total number of fixups left to do.
                             fixupsPerformed++;
                             fixups._values[i] = null;
                             if (!bObjectFullyComplete)
@@ -481,8 +481,8 @@ namespace Net9.BinaryFormatter
                             tempObjectHolder.Reachable = true;
                         }
 
-                        //There are two types of fixups that we could be doing: array or member.
-                        //Delayed Fixups should be handled by the above branch.
+                        // There are two types of fixups that we could be doing: array or member.
+                        // Delayed Fixups should be handled by the above branch.
                         switch (currentFixup._fixupType)
                         {
                             case FixupHolder.ArrayFixup:
@@ -498,7 +498,7 @@ namespace Net9.BinaryFormatter
                                 break;
                             case FixupHolder.MemberFixup:
                                 Debug.Assert(fixupInfo is MemberInfo, "fixupInfo is MemberInfo");
-                                //Fixup the member directly.
+                                // Fixup the member directly.
                                 MemberInfo tempMember = (MemberInfo)fixupInfo;
                                 if (tempMember is FieldInfo)
                                 {
@@ -535,7 +535,7 @@ namespace Net9.BinaryFormatter
                             default:
                                 throw new SerializationException(SR.Serialization_UnableToFixup);
                         }
-                        //Decrement our total number of fixups left to do.
+                        // Decrement our total number of fixups left to do.
                         fixupsPerformed++;
                         fixups._values[i] = null;
                         if (!bObjectFullyComplete)
@@ -569,16 +569,16 @@ namespace Net9.BinaryFormatter
                 return;
             }
 
-            //If we don't have any dependencies, we're done.
+            // If we don't have any dependencies, we're done.
             LongList? dependencies = holder.DependentObjects;
             if (dependencies == null)
             {
                 return;
             }
 
-            //Walk all of the dependencies and decrement the counter on each of uncompleted objects.
-            //If one of the counters reaches 0, all of it's fields have been completed and we should
-            //go take care of its fixups.
+            // Walk all of the dependencies and decrement the counter on each of uncompleted objects.
+            // If one of the counters reaches 0, all of it's fields have been completed and we should
+            // go take care of its fixups.
             dependencies.StartEnumeration();
             while (dependencies.MoveNext())
             {
@@ -609,8 +609,8 @@ namespace Net9.BinaryFormatter
                 throw new ArgumentOutOfRangeException(nameof(objectID), SR.ArgumentOutOfRange_ObjectID);
             }
 
-            //Find the bin in which we're interested.  IObjectReference's shouldn't be returned -- the graph
-            //needs to link to the objects to which they refer, not to the references themselves.
+            // Find the bin in which we're interested.  IObjectReference's shouldn't be returned -- the graph
+            // needs to link to the objects to which they refer, not to the references themselves.
             ObjectHolder? holder = FindObjectHolder(objectID);
             if (holder == null || holder.CanObjectValueChange)
             {
@@ -669,25 +669,25 @@ namespace Net9.BinaryFormatter
             {
                 Type selectorType = obj.GetType();
 
-                //If we need a surrogate for this object, lets find it now.
+                // If we need a surrogate for this object, lets find it now.
                 surrogate = _selector.GetSurrogate(selectorType, _context);
             }
 
-            //The object is interested in DeserializationEvents so lets register it.
+            // The object is interested in DeserializationEvents so lets register it.
             if (obj is IDeserializationCallback)
             {
                 DeserializationEventHandler d = new DeserializationEventHandler(((IDeserializationCallback)obj).OnDeserialization);
                 AddOnDeserialization(d);
             }
 
-            //Formatter developers may cache and reuse arrayIndex in their code.
-            //So that we don't get bitten by this, take a copy up front.
+            // Formatter developers may cache and reuse arrayIndex in their code.
+            // So that we don't get bitten by this, take a copy up front.
             if (arrayIndex != null)
             {
                 arrayIndex = (int[])arrayIndex.Clone();
             }
 
-            //This is the first time which we've seen the object, we need to create a new holder.
+            // This is the first time which we've seen the object, we need to create a new holder.
             temp = FindObjectHolder(objectID);
             if (temp == null)
             {
@@ -703,13 +703,13 @@ namespace Net9.BinaryFormatter
                 return;
             }
 
-            //If the object isn't null, we've registered this before.  Not good.
+            // If the object isn't null, we've registered this before.  Not good.
             if (temp.ObjectValue != null)
             {
                 throw new SerializationException(SR.Serialization_RegisterTwice);
             }
 
-            //Complete the data in the ObjectHolder
+            // Complete the data in the ObjectHolder
             temp.UpdateData(obj, info, surrogate, idOfContainingObj, (FieldInfo?)member, arrayIndex, this);
 
             // The following case will only be true when somebody has registered a fixup on an object before
@@ -731,14 +731,14 @@ namespace Net9.BinaryFormatter
 
             if (temp.CompletelyFixed)
             {
-                //Here's where things get tricky.  If this isn't an instance of IObjectReference, we need to walk it's fixup
-                //chain and decrement the counters on anything that has reached 0.  Once we've notified all of the dependencies,
-                //we can simply clear the list of dependent objects.
+                // Here's where things get tricky.  If this isn't an instance of IObjectReference, we need to walk it's fixup
+                // chain and decrement the counters on anything that has reached 0.  Once we've notified all of the dependencies,
+                // we can simply clear the list of dependent objects.
                 DoNewlyRegisteredObjectFixups(temp);
                 temp.DependentObjects = null;
             }
 
-            //Register the OnDeserialized methods to be invoked after deserialization is complete
+            // Register the OnDeserialized methods to be invoked after deserialization is complete
             if (temp.TotalDependentObjects > 0)
             {
                 AddOnDeserialized(obj);
@@ -803,18 +803,18 @@ namespace Net9.BinaryFormatter
             ObjectHolder? temp;
             int fixupCount = -1;
 
-            //The first thing that we need to do is fixup all of the objects which implement
-            //IObjectReference.  This is complicated by the fact that we need to deal with IReferenceObjects
-            //objects that have a reference to an object implementing IObjectReference.  We continually
-            //walk over the list of objects until we've completed all of the object references or until
-            //we can't resolve any more (which may happen if we have two objects implementing IObjectReference
-            //which have a circular dependency on each other).  We don't explicitly catch the later case here,
-            //it will be caught when we try to do the rest of the fixups and discover that we have some that
-            //can't be completed.
+            // The first thing that we need to do is fixup all of the objects which implement
+            // IObjectReference.  This is complicated by the fact that we need to deal with IReferenceObjects
+            // objects that have a reference to an object implementing IObjectReference.  We continually
+            // walk over the list of objects until we've completed all of the object references or until
+            // we can't resolve any more (which may happen if we have two objects implementing IObjectReference
+            // which have a circular dependency on each other).  We don't explicitly catch the later case here,
+            // it will be caught when we try to do the rest of the fixups and discover that we have some that
+            // can't be completed.
             while (fixupCount != 0)
             {
                 fixupCount = 0;
-                //Walk all of the IObjectReferences and ensure that they've been properly completed.
+                // Walk all of the IObjectReferences and ensure that they've been properly completed.
                 ObjectHolderListEnumerator fixupObjectsEnum = SpecialFixupObjects.GetFixupEnumerator();
                 while (fixupObjectsEnum.MoveNext())
                 {
@@ -845,7 +845,7 @@ namespace Net9.BinaryFormatter
 
             Debug.Assert(_fixupCount >= 0, "[ObjectManager.DoFixups]m_fixupCount>=0");
 
-            //If our count is 0, we're done and should just return
+            // If our count is 0, we're done and should just return
             if (_fixupCount == 0)
             {
                 if (TopObject is TypeLoadExceptionHolder)
@@ -855,8 +855,8 @@ namespace Net9.BinaryFormatter
                 return;
             }
 
-            //If our count isn't 0, we had at least one case where an object referenced another object twice.
-            //Walk the entire list until the count is 0 or until we find an object which we can't complete.
+            // If our count isn't 0, we had at least one case where an object referenced another object twice.
+            // Walk the entire list until the count is 0 or until we find an object which we can't complete.
             for (int i = 0; i < _objects.Length; i++)
             {
                 temp = _objects[i];
@@ -887,7 +887,7 @@ namespace Net9.BinaryFormatter
         /// <param name="objectToBeFixed">The id of the object requiring the fixup.</param>
         private void RegisterFixup(FixupHolder fixup, long objectToBeFixed, long objectRequired)
         {
-            //Record the fixup with the object that needs it.
+            // Record the fixup with the object that needs it.
             ObjectHolder ohToBeFixed = FindOrCreateObjectHolder(objectToBeFixed);
             ObjectHolder ohRequired;
 
@@ -896,11 +896,11 @@ namespace Net9.BinaryFormatter
                 throw new SerializationException(SR.Serialization_InvalidFixupType);
             }
 
-            //Add the fixup to the list.
+            // Add the fixup to the list.
             ohToBeFixed.AddFixup(fixup, this);
 
-            //Find the object on which we're dependent and note the dependency.
-            //These dependencies will be processed when the object is supplied.
+            // Find the object on which we're dependent and note the dependency.
+            // These dependencies will be processed when the object is supplied.
             ohRequired = FindOrCreateObjectHolder(objectRequired);
 
             ohRequired.AddDependency(objectToBeFixed);
@@ -910,7 +910,7 @@ namespace Net9.BinaryFormatter
 
         public virtual void RecordFixup(long objectToBeFixed, MemberInfo member, long objectRequired)
         {
-            //Verify our arguments
+            // Verify our arguments
             if (objectToBeFixed <= 0 || objectRequired <= 0)
             {
                 throw new ArgumentOutOfRangeException(objectToBeFixed <= 0 ? nameof(objectToBeFixed) : nameof(objectRequired), SR.Serialization_IdTooSmall);
@@ -921,21 +921,21 @@ namespace Net9.BinaryFormatter
                 throw new SerializationException(SR.Format(SR.Serialization_InvalidType, member.GetType()));
             }
 
-            //Create a new fixup holder
+            // Create a new fixup holder
             FixupHolder fixup = new FixupHolder(objectRequired, member, FixupHolder.MemberFixup);
             RegisterFixup(fixup, objectToBeFixed, objectRequired);
         }
 
         public virtual void RecordDelayedFixup(long objectToBeFixed, string memberName, long objectRequired)
         {
-            //Verify our arguments
+            // Verify our arguments
             if (objectToBeFixed <= 0 || objectRequired <= 0)
             {
                 throw new ArgumentOutOfRangeException(objectToBeFixed <= 0 ? nameof(objectToBeFixed) : nameof(objectRequired), SR.Serialization_IdTooSmall);
             }
             ArgumentNullException.ThrowIfNull(memberName);
 
-            //Create a new fixup holder
+            // Create a new fixup holder
             FixupHolder fixup = new FixupHolder(objectRequired, memberName, FixupHolder.DelayedFixup);
             RegisterFixup(fixup, objectToBeFixed, objectRequired);
         }
@@ -949,7 +949,7 @@ namespace Net9.BinaryFormatter
 
         public virtual void RecordArrayElementFixup(long arrayToBeFixed, int[] indices, long objectRequired)
         {
-            //Verify our arguments
+            // Verify our arguments
             if (arrayToBeFixed <= 0 || objectRequired <= 0)
             {
                 throw new ArgumentOutOfRangeException(arrayToBeFixed <= 0 ? nameof(arrayToBeFixed) : nameof(objectRequired), SR.Serialization_IdTooSmall);
@@ -1152,8 +1152,8 @@ namespace Net9.BinaryFormatter
         {
             ObjectHolder holder = this;
 
-            //This loop walks one more object up the chain than there are valuetypes.  This
-            //is because we need to increment the TotalFixups in the holders as well.
+            // This loop walks one more object up the chain than there are valuetypes.  This
+            // is because we need to increment the TotalFixups in the holders as well.
             do
             {
                 holder = manager.FindOrCreateObjectHolder(holder.ContainerID);
@@ -1195,7 +1195,7 @@ namespace Net9.BinaryFormatter
             Debug.Assert(obj != null, "obj!=null");
             Debug.Assert(_id > 0, "m_id>0");
 
-            //Record the fields that we can.
+            // Record the fields that we can.
             SetObjectValue(obj, manager);
             _serInfo = info;
             _surrogate = surrogate;
@@ -1374,7 +1374,7 @@ namespace Net9.BinaryFormatter
         internal const int DelayedFixup = 0x4;
 
         internal long _id;
-        internal object _fixupInfo; //This is either an array index, a String, or a MemberInfo
+        internal object _fixupInfo; // This is either an array index, a String, or a MemberInfo
         internal readonly int _fixupType;
 
         internal FixupHolder(long id, object fixupInfo, int fixupType)
@@ -1434,9 +1434,9 @@ namespace Net9.BinaryFormatter
         private const int InitialSize = 2;
 
         private long[] _values;
-        private int _count; //The total number of valid items still in the list;
-        private int _totalItems; //The total number of allocated entries. This includes space for items which have been marked as deleted.
-        private int _currentItem; //Used when doing an enumeration over the list.
+        private int _count; // The total number of valid items still in the list;
+        private int _totalItems; // The total number of allocated entries. This includes space for items which have been marked as deleted.
+        private int _currentItem; // Used when doing an enumeration over the list.
 
         // An m_currentItem of -1 indicates that the enumeration hasn't been started.
         // An m_values[xx] of -1 indicates that the item has been deleted.

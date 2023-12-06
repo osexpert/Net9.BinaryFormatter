@@ -83,7 +83,7 @@ namespace Net9.BinaryFormatter
             // Based on Type.IsSerializable()
 
             // Original code used TypeAttributes.Serializable
-            if (type.GetCustomAttribute<SerializableAttribute>() != null)
+            if (type.GetCustomAttribute<SerializableAttribute>(inherit: false) != null)
                 return true;
 
             //weird case?

@@ -13,7 +13,7 @@ namespace Net9.BinaryFormatter
     {
         // Control
         internal bool _isInitial;
-        internal int _count; //Progress count
+        internal int _count; // Progress count
         internal BinaryTypeEnum _expectedType = BinaryTypeEnum.ObjectUrt;
         internal object? _expectedTypeInformation;
 
@@ -56,7 +56,7 @@ namespace Net9.BinaryFormatter
             // Array Information
             _numItems = 0;
 
-            //binaryTypeEnum
+            // binaryTypeEnum
             _typeInformation = null;
 
             // Member Information
@@ -69,14 +69,14 @@ namespace Net9.BinaryFormatter
             _pr.Init();
         }
 
-        //Array item entry of nulls has a count of nulls represented by that item. The first null has been
+        // Array item entry of nulls has a count of nulls represented by that item. The first null has been
         // incremented by GetNext, the rest of the null counts are incremented here
         internal void ArrayCountIncrement(int value) => _count += value;
 
         // Specifies what is to parsed next from the wire.
         internal bool GetNext(out BinaryTypeEnum outBinaryTypeEnum, out object? outTypeInformation)
         {
-            //Initialize the out params up here.
+            // Initialize the out params up here.
             outBinaryTypeEnum = BinaryTypeEnum.Primitive;
             outTypeInformation = null;
 
